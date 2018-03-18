@@ -52,10 +52,17 @@ The randomized algorithm for $\SAT$ builds on a simple random walk algorithm. \p
 	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
-\paragraph{Analysis} Fix a satisfying assignment $\astar$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=r) = {n \choose r}2^{-n}$ . Let $q_r$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = r$. Notice that in each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. $q_r \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps.
+\paragraph{Analysis} Fix a satisfying assignment $\astar$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=r) = {n \choose r}2^{-n}$ . Let $q_r$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = r$. Notice that in each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_r \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps.
+%Detailed Probability Analysis
 \section{Derandomization with Local Search\cite{Dantsin02}}
-
+%Probabilistic Argument for Covering Code
+%Construction of Covering Code???
+%Recursion
+%Overall time
 \section{Improving on the Derandomization\cite{Moser11}}
+%k(3)-nary Covering Code
+%Faster Recursion
+%Overall time
 
 \begin{thebibliography}{9}
 \bibitem{Dantsin02}
