@@ -1,6 +1,15 @@
 \documentclass{article}
 
+\usepackage{amsthm}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
 \newcommand{\SAT}{\textnormal{$3$-SAT}}
+\newcommand{\CNF}{\textnormal{$3$-CNF}}
+\newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
+\newcommand{\dist}[2]{d_H(#1,#2)}
+
+\newtheorem{definition}{Definition}
+
 
 \title{Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
 \author{}
@@ -11,15 +20,23 @@
 \maketitle
 
 \section{Introduction}
-\paragraph{} In section 2, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$. In section 3, a derandomization algorithm by \cite{Dantsin02} is given. In section 4, we present an improvement by \cite{Moser11} that builds on the derandomization algorithm whose performance is arbitrarily close to the randomized version, thereby claiming a full derandomization.
+\paragraph{} In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that builds on the derandomization algorithm whose performance is arbitrarily close to the randomized version, thereby claiming a full derandomization.
 
+\section{Preliminaries}
+\paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $3$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
+A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
+Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$.\\
+
+\begin{definition}[Hamming Ball($\alpha,r$)]
+	The hamming ball 
+\end{definition}
 \section{Sch\"{o}ning's $3$-SAT Algorithm\cite{Schoning99}}
+The randomized algorithm is a simple random walk algorithm. 
 
 
+\section{Derandomization with Local Search\cite{Dantsin02}}
 
-\section{A Derandomization}
-
-\section{Improving on the Derandomization}
+\section{Improving on the Derandomization\cite{Moser11}}
 
 \begin{thebibliography}{9}
 \bibitem{Dantsin02}
