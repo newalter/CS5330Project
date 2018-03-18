@@ -8,6 +8,8 @@
 \newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
 \newcommand{\dist}[2]{d_H(#1,#2)}
 \newcommand{\ball}[2]{B_{#1}(#2)}
+\newcommand{\astar}{\alpha^*}
+\renewcommand{\Pr}{\textnormal{Pr}}
 
 \newtheorem{definition}{Definition}
 
@@ -28,20 +30,20 @@
 A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
 Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \par 
 \begin{definition}[Promise-Ball-\SAT\cite{Moser11}]
-	Given a $\CNF$ formula $F$, an assignment $\alpha$ for $F$, a natural number $r$ and the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
+	An instance of the Promise-Ball-$\SAT$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
 \end{definition}
-The Promise-Ball-$\SAT$ problem is an important sub-problem in solving $\SAT$. 
+The Promise-Ball-$\SAT$ problem is an important sub-problem for solving $\SAT$. 
 
 \section{Sch\"{o}ning's $3$-SAT Algorithm\cite{Schoning99}}
-The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for Promise-Ball-$\SAT$. \par 
+The randomized algorithm for $\SAT$ builds on a simple random walk algorithm. \par 
 \begin{algorithm}[H]
-	\caption{Promise-Ball-$\SAT$-Random-Walk}
+	\caption{$\SAT$-Random-Walk}
 	\DontPrintSemicolon
 	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
-	\Input{$\CNF$ formula $F$ with $n$ variables}
-	\Output{A satisfying assignment $\alpha^*$ or NO if $\alpha^*$ is not found}
+	\Input{A $\CNF$ formula $F$ with $n$ variables}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
 	\BlankLine
-	Initialization: Choose a assignment $\alpha$ for $F$ uniformly at random\\
+	Initialization: Choose an assignment $\alpha$ for $F$ uniformly at random\\
 	\For{steps = 1 to 3n}{
 		\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 		Choose an arbitrary clause $C$ not satified by $\alpha$\\
@@ -50,7 +52,7 @@ The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for
 	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
-
+\paragraph{Analysis} Fix a satisfying assignment $\astar$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=j) = {n \choose j}2^{-n}$ . Let $q_j$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = j$. 
 \section{Derandomization with Local Search\cite{Dantsin02}}
 
 \section{Improving on the Derandomization\cite{Moser11}}
