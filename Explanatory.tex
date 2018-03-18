@@ -26,14 +26,30 @@
 \section{Preliminaries}
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $3$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
 A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
-Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \\
-
+Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \par 
 \begin{definition}[Promise-Ball-\SAT\cite{Moser11}]
 	Given a $\CNF$ formula $F$, an assignment $\alpha$ for $F$, a natural number $r$ and the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
 \end{definition}
-\section{Sch\"{o}ning's $3$-SAT Algorithm\cite{Schoning99}}
-The randomized algorithm is a simple random walk algorithm. 
+The Promise-Ball-$\SAT$ problem is an important sub-problem in solving $\SAT$. 
 
+\section{Sch\"{o}ning's $3$-SAT Algorithm\cite{Schoning99}}
+The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for Promise-Ball-$\SAT$. \par 
+\begin{algorithm}[H]
+	\caption{Promise-Ball-$\SAT$-Random-Walk}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{$\CNF$ formula $F$ with $n$ variables}
+	\Output{A satisfying assignment $\alpha^*$ or NO if $\alpha^*$ is not found}
+	\BlankLine
+	Initialization: Choose a assignment $\alpha$ for $F$ uniformly at random\\
+	\For{steps = 1 to 3n}{
+		\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+		Choose an arbitrary clause $C$ not satified by $\alpha$\\
+		Choose a literal in $C$ uniformly at random and flip its value in $\alpha$
+	}
+	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+	\hspace{7em}\lElse{return NO}
+\end{algorithm}
 
 \section{Derandomization with Local Search\cite{Dantsin02}}
 
