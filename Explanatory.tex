@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{amsthm}
+\usepackage{amsmath}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 \newcommand{\SAT}{\textnormal{$3$-SAT}}
@@ -10,8 +11,10 @@
 \newcommand{\ball}[2]{B_{#1}(#2)}
 \newcommand{\astar}{\alpha^*}
 \renewcommand{\Pr}{\textnormal{Pr}}
+\renewcommand{\O}{\mathcal{O}^*}
 
 \newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
 
 
 \title{Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
@@ -52,8 +55,20 @@ The randomized algorithm for $\SAT$ builds on a simple random walk algorithm. \p
 	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
-\paragraph{Analysis} Fix a satisfying assignment $\astar$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=r) = {n \choose r}2^{-n}$ . Let $q_r$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = r$. Notice that in each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_r \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps.
-%Detailed Probability Analysis
+\begin{theorem}
+	If $F$ is satisfiable, $\SAT$-Random-Walk returns a satisfying assignment with probability $\geq (\frac{3}{4})^n$
+\end{theorem}
+\begin{proof}
+Fix a satisfying assignment $\astar$ for $F$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=r) = {n \choose r}{2}^{-n}$ . Let $q_r$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = r$. Notice that in each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_r \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps. 	
+%Detailed Probability Analysis for q_r
+\begin{align*}
+&\Pr(\SAT\text{-Random-Walk returns a satisfying assignment}) \\
+\geq& \sum_{r=0}^{n} {n \choose r} 2^{-n} \cdot q_r \\
+\geq& \big(\frac{1}{2}\big)^{n} \sum_{r=0}^{n} {n \choose r} \cdot \big(\frac{1}{2}\big)^{r} \cdot 1^{n-r} \\
+\geq& \big(\frac{1}{2}\big)^{n} (1 + \frac{1}{2}) ^n = \big(\frac{3}{4}\big)^{n}
+\end{align*}
+\end{proof}
+We can then amplify the probability with $\O((\frac{4}{3})^n)$ iterations of $\SAT$-Random-Walk(we use $\O$ to suppress the polynomial factor in $n$). Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O((\frac{4}{3})^n)$.
 \section{Derandomization with Local Search\cite{Dantsin02}}
 %Probabilistic Argument for Covering Code
 %Construction of Covering Code???
