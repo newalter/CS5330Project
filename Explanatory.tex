@@ -15,6 +15,7 @@
 \newcommand{\PBSbf}{\textbf{Promise-Ball-$\SATbf$}}
 \newcommand{\cc}{\mathcal{C}}
 \newcommand{\bits}{\{0,1\}}
+\newcommand{\poly}{\textnormal{poly}}
 \renewcommand{\Pr}{\textnormal{Pr}}
 \renewcommand{\O}{\mathcal{O}^*}
 
@@ -22,6 +23,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem*{note}{Note}
 \newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
 
 
 \title{Explanatory Report on Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
@@ -149,10 +151,27 @@ First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorith
 	where $h(\rho) = -\rho \log_2 \rho - (1-\rho)\log_2(1-\rho)$ is the binary entropy function.
 \end{lemma}
 \begin{theorem}
-	There exists a covering code $\cc_r$ of length $n$ where $|\cc_r|$
+	There exists a covering code $\cc_r$ of length $n$ and its size $|\cc_r|$ is at most $\lceil n\cdot 2^n / V(r) \rceil$.
 \end{theorem}
-%Probabilistic Argument for Covering Code
-%Construction of Covering Code???
+\begin{proof}
+	We give a probabilistic argument. Suppose we choose $ n\cdot 2^n / V(r)$ assignments from $\bits^n$ uniformly and independently to form $\cc_r$. Now fixed an assignment $\alpha$. The probability that $\alpha$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc_r$ is exactly $V(r)/2^n$. 
+	\begin{align*}
+	\Pr(\text{$\alpha$ is not covered}) = \Big(1-\frac{V(r)}{2^n}\Big)^{n\cdot \frac{2^n}{V(r)}} \leq e^{-n}
+	\end{align*}
+	By taking a union bound, the probability that $\cc_r$ is a covering code $\geq 1 - 2^n\cdot e^{-n} > 0$. Hence, such a covering code exists. 
+\end{proof}
+Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corollary:
+\begin{corollary}
+	Let $0 < \rho \leq 1/2$ and let $\beta(n) = \sqrt{8n\rho(1-\rho)}$. For all $n$, there exists a covering code $\cc$ of length $n$, radius $\rho n$ and size at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$.
+\end{corollary}
+\begin{theorem}
+	A covering code of length $n$ and size at most $n^2\beta(n)\cdot 2^{(1-h(\rho))n}$ can be constructed in $\O(2^{3n})$ time.
+\end{theorem}
+\begin{proof}
+	Notice that constructing a covering code is indeed a set cover problem with $2^n$ sets and $2^n$ elements. There is a well-known greedy algorithm that gives a $\log(m)$-approximation[citation needed] to the set cover problem. In each iteration, we pick the Hamming Ball that covers the largest number of not-yet-covered elements. We can associate each Hamming Ball with the number of not-yet-covered elements that is covers. In each iteration, we pick a Hamming Ball greedily and update the numbers for all remaining Balls. This takes $\poly(n) \cdot 2^n \cdot 2^n = \poly(n) \cdot 2^{2n}$ time. There are at most $2^n$ iterations. Hence, the overall running time is $\O(2^{3n})$. \par 
+	From \textbf{Corollary 1}, we know the optimal solution is at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$. The algorithm above gives a $\log(m)$ approximation. Note that the size of the problem $m = 2^n$. Hence, the size of the covering code constructed is at most $\log(2^n) \cdot n\beta(n)\cdot 2^{(1-h(\rho))n} = n^2\beta(n)\cdot 2^{(1-h(\rho))n}$
+\end{proof}
+%Construction of Covering Code Efficiently
 %Overall time
 \section{Improving on the Derandomization\cite{Moser11}}
 %k(3)-nary Covering Code
