@@ -195,6 +195,20 @@ Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corolla
 	}
 	{return NO}
 \end{algorithm}
+It is easy to see that Deterministic $\SAT$ returns a satisfying assignment if $F$ is satisfiable. Consider a satisfying assignment $\astar$. By definition of the covering code, $\exists c \in \cc$ such that $\dist{c}{\astar} \leq \rho n$. Hence, the depth-first-search $\PBS$-Recursion($F,c,\rho n$) would be able to find $\astar$. \par
+The running time $T(n,\rho,d)$ involves computing the covering code,  $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$ and doing the search, $\O(2^{(1-h(\rho))n})\cdot \O(3^{\rho n})$. That is,
+\begin{align*}
+T(n,\rho,d) = \O(2^{3n/d}+ 2^{(1-h(\rho))n}) + \O(2^{(1-h(\rho))n})\cdot \O(3^{\rho n})
+\end{align*} 
+It is easy to see that for a reasonably large $d$ such as $d \geq 6$, the first term is completely dominated by the second term. By differentiation we find $\rho = 1/4$ minimized the running time,
+\begin{align*}
+T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot 3^{\rho n})\\
+&= \O\Big(2^{(1+ \frac{1}{4}\log_2\frac{1}{4} + \frac{3}{4}\log_2\frac{3}{4})n} \cdot 2^{(\frac{1}{4} \log_2 3 )n}\Big)\\
+&= \O\Big(2^{(1 - \frac{1}{4}\log_2 4 + \frac{3}{4}\log_2 3 - \frac{3}{4}\log_2 4 + \frac{1}{4} \log_2 3)n}\Big)\\
+&= \O\Big(2^{(1 - \log_2 4 + \log_2 3)n}\Big)\\
+&= \O\big(\big(2 \cdot \frac{1}{4} \cdot 3\big)^{n}\big) = \O(1.5^n)
+\end{align*} 
+Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, if we can improve the performance of $\PBS$-Recursion, we arrive at the desired time complexity.
 \section{Improving on the Derandomization\cite{Moser11}}
 %k(3)-nary Covering Code
 %Faster Recursion
