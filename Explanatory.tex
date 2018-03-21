@@ -21,6 +21,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem*{note}{Note}
+\newtheorem{lemma}{Lemma}
 
 
 \title{Explanatory Report on Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
@@ -37,7 +38,7 @@
 \section{Preliminaries}
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $3$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
 A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
-Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \par 
+Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. For assignments of $n$ variables, let $V(r)$ denotes the volume of a Hamming Ball of radius $r$, that is, the number of assignments in the Hamming Ball.\par 
 For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denote the assignment that derives from $\alpha$ after setting $l$ to be $1$. Similarly for a formula $F$, we use $F^{[l = 1]}$ to denote the new formula after setting $l$ to be $1$. \par 
 \begin{definition}[\PBS\cite{Moser11}]
 	An instance of the $\PBS$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
@@ -133,10 +134,23 @@ First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorith
 \end{proof}
 
 \subsection{Derandomization Using Covering Code}
-\paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code.\par 
+\paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code. \par 
 \begin{definition}[Covering Code]
-	A Covering Code $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$.
+	A Covering Code of length $n$, $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
 \end{definition}
+\begin{lemma}[Bounding the volume of a Hamming Ball of radius $r$]
+	\begin{align*}
+	V(r) = \sum_{i = 0}^{n} {n \choose i}
+	\end{align*}
+	Let $\rho = r/n$. If $0 < \rho \leq 1/2$, then $V(r)$ can be estimated using: [citation needed]
+	\begin{align*}
+	\frac{1}{\sqrt{8n\rho(1-\rho)}} \cdot 2^{h(\rho)n} \leq V(r) \leq 2^{h(\rho)n}
+	\end{align*}
+	where $h(\rho) = -\rho \log_2 \rho - (1-\rho)\log_2(1-\rho)$ is the binary entropy function.
+\end{lemma}
+\begin{theorem}
+	There exists a covering code $\cc_r$ of length $n$ where $|\cc_r|$
+\end{theorem}
 %Probabilistic Argument for Covering Code
 %Construction of Covering Code???
 %Overall time
