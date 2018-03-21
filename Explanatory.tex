@@ -10,14 +10,16 @@
 \newcommand{\dist}[2]{d_H(#1,#2)}
 \newcommand{\ball}[2]{B_{#1}(#2)}
 \newcommand{\astar}{\alpha^*}
+\newcommand{\PBS}{\textnormal{Promise-Ball-$\SAT$}}
 \renewcommand{\Pr}{\textnormal{Pr}}
 \renewcommand{\O}{\mathcal{O}^*}
 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem*{note}{Note}
 
 
-\title{Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
+\title{Explanatory Report on Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
 \author{}
 \date{}
 
@@ -26,27 +28,26 @@
 \maketitle
 
 \section{Introduction}
-\paragraph{} In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that builds on the derandomization algorithm whose performance is arbitrarily close to the randomized version, thereby claiming a full derandomization.
+\paragraph{} The explanatory report is organized in the following manner. In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that builds on the derandomization algorithm whose performance is arbitrarily close to the randomized version, thereby claiming a full derandomization.
 
 \section{Preliminaries}
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $3$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
 A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
 Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \par 
-\begin{definition}[Promise-Ball-\SAT\cite{Moser11}]
-	An instance of the Promise-Ball-$\SAT$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
+\begin{definition}[\PBS\cite{Moser11}]
+	An instance of the $\PBS$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
 \end{definition}
-The Promise-Ball-$\SAT$ problem is an important sub-problem for solving $\SAT$. 
+The $\PBS$ problem is an important sub-problem for solving $\SAT$. 
 
 \section{Sch\"{o}ning's $3$-SAT Algorithm\cite{Schoning99}}
-The randomized algorithm for $\SAT$ builds on a simple random walk algorithm. \par 
+The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for solving $\PBS$: \par 
 \begin{algorithm}[H]
-	\caption{$\SAT$-Random-Walk}
+	\caption{$\PBS$-Random-Walk}
 	\DontPrintSemicolon
 	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
-	\Input{A $\CNF$ formula $F$ with $n$ variables}
+	\Input{$(F,\alpha,r)$}
 	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
 	\BlankLine
-	Initialization: Choose an assignment $\alpha$ for $F$ uniformly at random\\
 	\For{steps = 1 to 3n}{
 		\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 		Choose an arbitrary clause $C$ not satified by $\alpha$\\
@@ -55,21 +56,45 @@ The randomized algorithm for $\SAT$ builds on a simple random walk algorithm. \p
 	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
+
+\begin{theorem}[\cite{Schoning99}]
+For a satisfying assignment $\astar \in \ball{r}{\alpha}$, where $\dist{\alpha}{\astar} = d \leq r$, $\PBS \textnormal{-Random-Walk}$ returns $\astar$ with probability $\geq (\frac{1}{2})^d$.
+\end{theorem}
+\begin{proof}[Proof Sketch]
+	Let $q_d$ be the probability that $\PBS$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = d$. In each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_d \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps. Detailed analysis of the random walk gives $q_d \geq (\frac{1}{2})^d$.
+\end{proof}
+\begin{note}
+	The input parameter $r$ is not used in $\PBS$\textnormal{-Random-Walk}. By nature of randomness, $\PBS$\textnormal{-Random-Walk} solves $(F,\alpha,d)$ with probability $\geq (\frac{1}{2})^{d}$.
+\end{note}
+With $\PBS$-Random-Walk, we have a randomized algorithm for $\SAT$:\par 
+\begin{algorithm}[H]
+	\caption{Randomized $\SAT$}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{A $\CNF$ formula $F$ with $n$ variables}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+	\BlankLine
+	\For{iterations = 1 to m}{
+		Choose a assignment $\alpha$ for $F$ uniformly at random\\
+		$\astar$ = $\PBS$-Random-Walk($F,\alpha,n$)\\
+		\lIf{$\astar$ satisfies $F$}{return $\astar$}
+	}
+	{return NO}
+\end{algorithm}
 \begin{theorem}
-	If $F$ is satisfiable, $\SAT$-Random-Walk returns a satisfying assignment with probability $\geq (\frac{3}{4})^n$
+	If $F$ is satisfiable, each iteration of the for-loop in \textnormal{Randomized-}$\SAT$ returns a satisfying assignment with probability $\geq (\frac{3}{4})^n$
 \end{theorem}
 \begin{proof}
-Fix a satisfying assignment $\astar$ for $F$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=r) = {n \choose r}{2}^{-n}$ . Let $q_r$ be the probability that $\SAT$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = r$. Notice that in each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_r \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps. 	
-%Detailed Probability Analysis for q_r
-\begin{align*}
-&\Pr(\SAT\text{-Random-Walk returns a satisfying assignment}) \\
-\geq& \sum_{r=0}^{n} {n \choose r} 2^{-n} \cdot q_r \\
-\geq& \big(\frac{1}{2}\big)^{n} \sum_{r=0}^{n} {n \choose r} \cdot \big(\frac{1}{2}\big)^{r} \cdot 1^{n-r} \\
-\geq& \big(\frac{1}{2}\big)^{n} (1 + \frac{1}{2}) ^n = \big(\frac{3}{4}\big)^{n}
-\end{align*}
+	Fix a satisfying assignment $\astar$ for $F$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=d) = {n \choose d}{2}^{-n}$. With \textbf{Theorem 1}, we have:
+	\begin{align*}
+	&\Pr(\textnormal{Success in one iteration}) 
+	\geq \sum_{d=0}^{n} {n \choose d} 2^{-n} \cdot \big(\frac{1}{2}\big)^{d} 
+	\geq \big(\frac{1}{2}\big)^{n} (1 + \frac{1}{2}) ^n = \big(\frac{3}{4}\big)^{n}
+	\end{align*}
 \end{proof}
-We can then amplify the probability with $\O((\frac{4}{3})^n)$ iterations of $\SAT$-Random-Walk(we use $\O$ to suppress the polynomial factor in $n$). Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O((\frac{4}{3})^n)$.
+We can then amplify the probability by setting the number of iterations $m = \O((\frac{4}{3})^n)$(we use $\O$ to suppress the polynomial factor in $n$). Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O((\frac{4}{3})^n)$.
 \section{Derandomization with Local Search\cite{Dantsin02}}
+\paragraph{} Notice that in the randomized algorithm 
 %Probabilistic Argument for Covering Code
 %Construction of Covering Code???
 %Recursion
