@@ -5,12 +5,16 @@
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 \newcommand{\SAT}{\textnormal{$3$-SAT}}
+\newcommand{\SATbf}{\textbf{$3$-SAT}}
 \newcommand{\CNF}{\textnormal{$3$-CNF}}
 \newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
 \newcommand{\dist}[2]{d_H(#1,#2)}
 \newcommand{\ball}[2]{B_{#1}(#2)}
 \newcommand{\astar}{\alpha^*}
 \newcommand{\PBS}{\textnormal{Promise-Ball-$\SAT$}}
+\newcommand{\PBSbf}{\textbf{Promise-Ball-$\SATbf$}}
+\newcommand{\cc}{\mathcal{C}}
+\newcommand{\bits}{\{0,1\}}
 \renewcommand{\Pr}{\textnormal{Pr}}
 \renewcommand{\O}{\mathcal{O}^*}
 
@@ -34,6 +38,7 @@
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $3$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
 A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
 Given two assignment $\alpha$ and $\beta$, the hamming distance between them $\dist{\alpha}{\beta}$ is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose hamming distance from $\alpha$ is less or equals to $r$. \par 
+For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denote the assignment that derives from $\alpha$ after setting $l$ to be $1$. Similarly for a formula $F$, we use $F^{[l = 1]}$ to denote the new formula after setting $l$ to be $1$. \par 
 \begin{definition}[\PBS\cite{Moser11}]
 	An instance of the $\PBS$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
 \end{definition}
@@ -63,9 +68,14 @@ For a satisfying assignment $\astar \in \ball{r}{\alpha}$, where $\dist{\alpha}{
 \begin{proof}[Proof Sketch]
 	Let $q_d$ be the probability that $\PBS$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = d$. In each step, with probability $\geq \frac{1}{3}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq \frac{2}{3}$ it goes one step further from $\astar$. Hence, $q_d \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps. Detailed analysis of the random walk gives $q_d \geq (\frac{1}{2})^d$.
 \end{proof}
+
+%Do we need this?
+\iffalse
 \begin{note}
 	The input parameter $r$ is not used in $\PBS$\textnormal{-Random-Walk}. By nature of randomness, $\PBS$\textnormal{-Random-Walk} solves $(F,\alpha,d)$ with probability $\geq (\frac{1}{2})^{d}$.
 \end{note}
+\fi
+
 With $\PBS$-Random-Walk, we have a randomized algorithm for $\SAT$:\par 
 \begin{algorithm}[H]
 	\caption{Randomized $\SAT$}
@@ -94,10 +104,41 @@ With $\PBS$-Random-Walk, we have a randomized algorithm for $\SAT$:\par
 \end{proof}
 We can then amplify the probability by setting the number of iterations $m = \O((\frac{4}{3})^n)$(we use $\O$ to suppress the polynomial factor in $n$). Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O((\frac{4}{3})^n)$.
 \section{Derandomization with Local Search\cite{Dantsin02}}
-\paragraph{} Notice that in the randomized algorithm 
+\paragraph{} Notice that in the randomized algorithm, randomness is used in two parts. One is in $\PBS$-Random-Walk and the other one is to find an assignment $\alpha$ that serves as the center of Hamming Ball $\ball{r}{\alpha}$. Both of them needs to be derandomized. \par 
+\subsection{Derandomization of {$\PBSbf$}}
+First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorithm. \par 
+\begin{algorithm}[H]
+	\caption{$\PBS$-Recursion}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{$(F,\alpha,r)$}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+	\BlankLine
+	\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+	\hspace{7em}\lElseIf{r = 0}{return NO}
+	Choose an arbitrary clause $C$ not satified by $\alpha$\\
+	\ForEach{literal $l \in C$}{
+		$\alpha'$ = $\PBS$-Recursion($F^{[l = 1]}, \alpha^{[l=1]},r-1)$\\
+		\lIf {$\alpha'$ satisfies $F$}{Return $\alpha'$}
+	}
+	{return NO}
+\end{algorithm}
+\begin{theorem}
+	$\PBS \textnormal{-Recursion}$ solves $\PBS$ in $\O(3^r)$ time.
+\end{theorem}
+\begin{proof}
+	The running time is straightforward. Each clause has at most $3$ literals and hence each node in the recursion tree has at most $3$ branches. The depth of the recursion three is at most $r$. Hence, there are at most $3^r$ leaves in the recursion tree. The overall runtime is $\O(3^r)$. \par 
+	The correctness can be seen by drawing analogy to the random walk algorithm. Let $\astar$ be the satisfying assignment such that $\dist{\astar}{\alpha} \leq r$. Then there exists a ``lucky" random walk from $\alpha$ to $\astar$ that takes $\leq r$ steps, that is, in each step we move one step closer to $\astar$ and never makes a wrong move. Notice that if we never makes a wrong move, we will never change the assignment of a variable for more than once. \par 
+	Now consider the recursion algorithm, in each recursive step we choose a clause $C$ not satisfied by $\alpha$ and we know $C$ is satisfied by $\astar$. Hence, at least one of the literals in $C$ does not comply with $\astar$. Now instead of guessing randomly which is the right literal to flip as in the random walk algorithm, we try all possibilities and at least one of them would be a good move, giving us $\dist{\astar}{\alpha^{[l = 1]}} = r - 1$. Moreover, if we make a good move, we do not need to change the assignment of that literal in the future. We can then assign that value permanently and search using $F^{[l=1]}$ and $\alpha^{[l=1]}$. Hence, this is a depth-first-search algorithm that finds the "lucky" path from $\alpha$ to $\astar$.
+\end{proof}
+
+\subsection{Derandomization Using Covering Code}
+\paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code.\par 
+\begin{definition}[Covering Code]
+	A Covering Code $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$.
+\end{definition}
 %Probabilistic Argument for Covering Code
 %Construction of Covering Code???
-%Recursion
 %Overall time
 \section{Improving on the Derandomization\cite{Moser11}}
 %k(3)-nary Covering Code
