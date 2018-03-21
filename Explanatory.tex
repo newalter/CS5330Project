@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[a4paper,12pts]{article}
 
 \usepackage{amsthm}
 \usepackage{amsmath}
@@ -169,10 +169,32 @@ Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corolla
 \end{theorem}
 \begin{proof}
 	Notice that constructing a covering code is indeed a set cover problem with $2^n$ sets and $2^n$ elements. There is a well-known greedy algorithm that gives a $\log(m)$-approximation[citation needed] to the set cover problem. In each iteration, we pick the Hamming Ball that covers the largest number of not-yet-covered elements. We can associate each Hamming Ball with the number of not-yet-covered elements that is covers. In each iteration, we pick a Hamming Ball greedily and update the numbers for all remaining Balls. This takes $\poly(n) \cdot 2^n \cdot 2^n = \poly(n) \cdot 2^{2n}$ time. There are at most $2^n$ iterations. Hence, the overall running time is $\O(2^{3n})$. \par 
-	From \textbf{Corollary 1}, we know the optimal solution is at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$. The algorithm above gives a $\log(m)$ approximation. Note that the size of the problem $m = 2^n$. Hence, the size of the covering code constructed is at most $\log(2^n) \cdot n\beta(n)\cdot 2^{(1-h(\rho))n} = n^2\beta(n)\cdot 2^{(1-h(\rho))n}$
+	From \textbf{Corollary 1}, we know the optimal size of the covering code is at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$. The algorithm above gives a $\log(m)$ approximation. Note that the size of the problem $m = 2^n$. Hence, the size of the covering code constructed is at most $\log(2^n) \cdot n\beta(n)\cdot 2^{(1-h(\rho))n} = n^2\beta(n)\cdot 2^{(1-h(\rho))n}$
 \end{proof}
-%Construction of Covering Code Efficiently
-%Overall time
+\begin{theorem}
+	Let $d\geq 2$ be a divisor of $n$ and $0<\rho \leq 1/2$. Then a covering code of length $n$ and size at most $\O(2^{(1-h(\rho))n})$ can be constructed in time $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$.
+\end{theorem}
+\begin{proof}
+	Using \textbf{Theorem 5}, we can construct a covering code $\cc'$ of length $\frac{n}{d}$, radius $\frac{\rho n}{d}$. Now define $\cc = \{c_1c_2...c_d:c_1,c_2,...,c_d \in \cc'\}$ to be the covering code of length $n$, radius $\rho n$, that is, $\cc$ is the set of all concatenations of $d$ codes from $\cc'$.\par 
+	It is easy to verify that $\cc$ is a covering code of length $n$. For any $\alpha \in \bits^n$, split $\alpha$ into $d$ blocks of length $\frac{n}{d}$ i.e. $\alpha = \alpha_1\alpha_2...\alpha_d$. For each $\alpha_i$, there exists a code $c_i \in \cc'$ such that $\dist{\alpha_i}{c_i} \leq \frac{\rho n}{d}$. Now the code $c = c_1c_2...c_d \in \cc$ and $\dist{\alpha}{c} \leq \rho n$. \par 
+	The size of $\cc'$ is at most $n^2\beta(n)\cdot 2^{(1-h(\rho))n/d}$ and constructing it takes $\O(2^{3n/d})$ time. The size of $\cc = |\cc'|^d \leq n^{2d}\beta(n)^d\cdot 2^{(1-h(\rho))n} = \O(2^{(1-h(\rho))n})$. Hence, the time taken to construct $\cc$ is $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$.
+\end{proof}
+\subsection{Overall Algorithm}
+\paragraph{}Now that we have a covering code, we can complete our deterministic algorithm for $\SAT$:\par 
+\begin{algorithm}[H]
+	\caption{Deterministic $\SAT$}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{A $\CNF$ formula $F$ with $n$ variables}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+	\BlankLine
+	Initialization: Compute covering code $\cc$\\
+	\ForEach{code $c \in \cc$}{
+		$\astar$ = $\PBS$-Recursion($F,c,\rho n$)\\
+		\lIf{$\astar$ satisfies $F$}{return $\astar$}
+	}
+	{return NO}
+\end{algorithm}
 \section{Improving on the Derandomization\cite{Moser11}}
 %k(3)-nary Covering Code
 %Faster Recursion
