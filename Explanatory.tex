@@ -35,7 +35,8 @@
 \maketitle
 
 \section{Introduction}
-\paragraph{} The explanatory report is organized in the following manner. In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that builds on the derandomization algorithm whose performance is arbitrarily close to the randomized version, thereby claiming a full derandomization.
+\paragraph{} $\SAT$ is a well-known and probably the most studied NP-Complete problem. In 1999, Uwe Sch\"{o}ning gave a simple yet efficient randomized algorithm for $\SAT$\cite{Schoning99}. The algorithm was later derandomized in two subsequent papers[\cite{Dantsin02,Moser11}]. In this explanatory report, we will reorganize their results and present the fully derandomized algorithm.\par 
+The explanatory report is organized in the following manner. In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$, reorganized to facilitate our analysis for derandomization. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that improves the derandomization algorithm and attains performance arbitrarily close to the randomized version, thereby claiming a full derandomization.
 
 \section{Preliminaries}
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $k$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
@@ -210,9 +211,12 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\
 \end{align*} 
 Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, we observe that the parameter $k$ in the overall running time comes from the running time of $\PBS$-Recursion, $\O(k^{\rho n})$. If we can improve its performance to $\O((k-1)^{\rho n})$, we arrive at a $\O\big((2(1 - \frac{1}{k}))^n\big)$ running time which is on par with the randomized algorithm.
 \section{Improving on the Derandomization\cite{Moser11}}
+\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
+\subsection{k-nary Covering Code}
 %k-nary Covering Code
+\subsection{Faster $\PBSbf$ Algorithm}
 %Faster Recursion
-%Overall time
+
 
 \begin{thebibliography}{9}
 \bibitem{Dantsin02}
