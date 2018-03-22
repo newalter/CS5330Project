@@ -48,7 +48,7 @@ For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denot
 \end{definition}
 The $\PBS$ problem is an important sub-problem for solving $\SAT$. 
 
-\section{Sch\"{o}ning's \SATbf Algorithm\cite{Schoning99}}
+\section{Sch\"{o}ning's $\SATbf$ Algorithm\cite{Schoning99}}
 The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for solving $\PBS$: \par 
 \begin{algorithm}[H]
 	\caption{$\PBS$-Random-Walk}
@@ -136,6 +136,9 @@ First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorith
 	Now consider the recursion algorithm, in each recursive step we choose a clause $C$ not satisfied by $\alpha$ and we know $C$ is satisfied by $\astar$. Hence, at least one of the literals in $C$ does not comply with $\astar$. Now instead of guessing randomly which is the right literal to flip as in the random walk algorithm, we try all possibilities and at least one of them would be a good move, giving us $\dist{\astar}{\alpha^{[l = 1]}} = r - 1$. Moreover, if we make a good move, we do not need to change the assignment of that literal in the future. We can then assign that value permanently and search using $F^{[l=1]}$ and $\alpha^{[l=1]}$. Hence, this is a depth-first-search algorithm that finds the "lucky" path from $\alpha$ to $\astar$.
 \end{proof}
 
+\begin{note}
+	$\PBS$-Recursion is much faster than enumerating all elements in the Hamming Ball because we are indeed performing an informed search. We only look at unsatisfied clauses and hence prune out many unnecessary branches.
+\end{note}
 \subsection{Derandomization Using Covering Code}
 \paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code. \par 
 \begin{definition}[Covering Code]
