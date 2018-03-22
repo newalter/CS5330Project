@@ -179,7 +179,7 @@ Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corolla
 	It is easy to verify that $\cc$ is a covering code of length $n$. For any $\alpha \in \bits^n$, split $\alpha$ into $d$ blocks of length $\frac{n}{d}$ i.e. $\alpha = \alpha_1\alpha_2...\alpha_d$. For each $\alpha_i$, there exists a code $c_i \in \cc'$ such that $\dist{\alpha_i}{c_i} \leq \frac{\rho n}{d}$. Now the code $c = c_1c_2...c_d \in \cc$ and $\dist{\alpha}{c} \leq \rho n$. \par 
 	The size of $\cc'$ is at most $n^2\beta(n)\cdot 2^{(1-h(\rho))n/d}$ and constructing it takes $\O(2^{3n/d})$ time. The size of $\cc = |\cc'|^d \leq n^{2d}\beta(n)^d\cdot 2^{(1-h(\rho))n} = \O(2^{(1-h(\rho))n})$. Hence, the time taken to construct $\cc$ is $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$.
 \end{proof}
-\subsection{Overall Algorithm}
+\subsection{Combining the Derandomization}
 \paragraph{}Now that we have a covering code, we can complete our deterministic algorithm for $\SAT$:\par 
 \begin{algorithm}[H]
 	\caption{Deterministic $\SAT$}
@@ -200,7 +200,7 @@ The running time $T(n,\rho,d)$ involves computing the covering code,  $\O(2^{3n/
 \begin{align*}
 T(n,\rho,d) = \O(2^{3n/d}+ 2^{(1-h(\rho))n}) + \O(2^{(1-h(\rho))n})\cdot \O(3^{\rho n})
 \end{align*} 
-It is easy to see that for a reasonably large $d$ such as $d \geq 6$, the first term is completely dominated by the second term. By differentiation we find $\rho = 1/4$ minimized the running time,
+It is easy to see that for a reasonably large $d$ such as $d \geq 6$, the first term is completely dominated by the second term. By taking partial derivatives about $\rho$ on the exponential term, we can easily find out $\rho = 1/4$ minimized the running time. Hence, 
 \begin{align*}
 T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot 3^{\rho n})\\
 &= \O\Big(2^{(1+ \frac{1}{4}\log_2\frac{1}{4} + \frac{3}{4}\log_2\frac{3}{4})n} \cdot 2^{(\frac{1}{4} \log_2 3 )n}\Big)\\
