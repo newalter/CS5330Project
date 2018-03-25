@@ -2,6 +2,7 @@
 
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{amsfonts}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 
 \newcommand{\SAT}{\textnormal{$k$-SAT}}
@@ -216,12 +217,33 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\
 \end{align*} 
 Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, we observe that the parameter $k$ in the overall running time comes from the running time of $\PBS$-Recursion, $\O(k^{\rho n})$. If we can improve its performance to $\O((k-1)^{\rho n})$, we arrive at a $\O\big((2(1 - \frac{1}{k}))^n\big)$ running time which is on par with the randomized algorithm.
 \section{Improving on the Derandomization\cite{Moser11}}
-\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
+\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
 \subsection{k-nary Covering Code}
-\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is less than $r$.
+\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define $k$-Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is less than $r$. 
+\begin{lemma}[Bounding the volume of a $k$-Hamming Ball of radius r]
+	Let $V^k(r)$ denotes the volume of a $k$-Hamming Ball centered at $w$. Consider the set $S = \{w' \in \kbits^t: \dist{w}{w'} = r\}$. There are ${t \choose r}$ possible ways to choose the coordinates that are different in $w$ and $w'$. Each coordinate has $k-1$ choices of value. Hence,
+	\begin{align*}
+	V^k(r) > |S| \geq {t \choose r}(k-1)^r
+	\end{align*}
+\end{lemma}
 \begin{definition}[k-nary Covering Code]
-	A k-nary Covering Code of length $t$, $\cc_r^t \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^t$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\kbits^t$.
+	A k-nary Covering Code of length $t$ and radius $r$, $\cc_r^t \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^t$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\kbits^t$. 
 \end{definition}
+\begin{lemma}
+	For any $t,k \in \mathbb{N}$, there exists a k-nary covering code $\cc^k_r \in \kbits^t$ of radius $r$ such that 
+	\begin{align*}
+	|\cc^k_r| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose r}(k-1)^r} \right \rceil
+	\end{align*}
+\end{lemma}
+\begin{proof}
+	The proof is similar to the probabilistic proof for Theorem 4. Suppose we choose $\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}$ assignments from $\kbits^t$ uniformly and independently to form $\cc^k_r$. Now fixed an member $w \in \kbits^t$. The probability that $w$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc^k_r$ is exactly $V^k(r)/k^t$. 
+	\begin{align*}
+	\Pr(\text{$w$ is not covered}) &= \Bigg(1-\frac{V^k(r)}{k^r}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
+	&<\Bigg(1-\frac{{t \choose r}(k-1)^r}{k^r}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
+	&\leq e^{-t\ln(k)} \leq k^{-t}
+	\end{align*}
+	By taking a union bound over all $k^t$ members from $\kbits^t$, the probability that $\cc^k_r$ is a covering code $> 1 - k^t\cdot k^{-t} > 0$. Hence, such a covering code exists. 
+\end{proof}
 \subsection{Faster $\PBSbf$ Algorithm}
 %Faster Recursion
 
