@@ -38,13 +38,13 @@
 \maketitle
 
 \section{Introduction}
-\paragraph{} $\SAT$ is a well-known and probably the most studied NP-Complete problem. In 1999, Uwe Sch\"{o}ning gave a simple yet efficient randomized algorithm for $\SAT$\cite{Schoning99}. The algorithm was later derandomized in two subsequent papers[\cite{Dantsin02,Moser11}]. In this explanatory report, we will reorganize their results and present the fully derandomized algorithm.\par 
-The explanatory report is organized in the following manner. In section 2, we introduce some notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$, reorganized to facilitate our analysis for derandomization. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that improves the derandomization algorithm and attains performance arbitrarily close to the randomized version, thereby claiming a full derandomization.
+\paragraph{} $\SAT$ is a well-known and probably the most studied NP-Complete problem. A naive search algorithm solves $\SAT$ in $\O(2^n)$ time by searching all possible assignments to all variables(we use $\O$ to suppress the polynomial factor in $n$). In 1999, Uwe Sch\"{o}ning gave a simple yet efficient randomized algorithm for $\SAT$\cite{Schoning99} that runs in $\O((2(1-\frac{1}{k}))^n)$. The algorithm was later derandomized in two subsequent papers\cite{Dantsin02,Moser11}. In this explanatory report, we will reorganize their results and present the fully derandomized algorithm.\par 
+The explanatory report is organized in the following manner. In section 2, we introduce some basic notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$, reorganized to facilitate our analysis for derandomization. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that improves the derandomization algorithm and attains performance arbitrarily close to the randomized version, thereby claiming a full derandomization.
 
 \section{Preliminaries}
 \paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $k$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
-A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. \par 
-Given two assignments $\alpha$ and $\beta$, the Hamming distance between them, denoted as $\dist{\alpha}{\beta}$, is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$ that is, all assignments whose Hamming distance from $\alpha$ is less than or equals to $r$. For assignments of $n$ variables, let $V(r)$ denotes the volume of a Hamming Ball of radius $r$, that is, the number of assignments in the Hamming Ball.\par 
+A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. Alternatively, for a fixed set of variables $V=\{x_1,x_2,...,x_n\}$, an assignment $\alpha$ can be considered as a $n$-bit binary string where the $i$th bit gives the value of $x_i$.\par 
+Given two assignments $\alpha$ and $\beta$, the Hamming distance between them, denoted as $\dist{\alpha}{\beta}$, is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$, that is, all assignments whose Hamming distance from $\alpha$ is less than or equals to $r$. For assignments of $n$ variables, let $V(r)$ denotes the volume of a Hamming Ball of radius $r$, that is, the number of assignments in the Hamming Ball.\par 
 For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denote the assignment that is derived from $\alpha$ after setting $l$ to be $1$. Similarly for a formula $F$, we use $F^{[l = 1]}$ to denote the new formula obtained after setting $l$ to be $1$. \par 
 \begin{definition}[\PBS\cite{Moser11}]
 	An instance of the $\PBS$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
@@ -69,11 +69,11 @@ The randomized algorithm for $\SAT$ builds on a simple random walk algorithm for
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
 
-\begin{theorem}[\cite{Schoning99}]
+\begin{lemma}[\cite{Schoning99}]
 For a satisfying assignment $\astar \in \ball{r}{\alpha}$, where $\dist{\alpha}{\astar} = d \leq r$, $\PBS \textnormal{-Random-Walk}$ returns $\astar$ with probability $\geq (\frac{1}{k-1})^d$.
-\end{theorem}
+\end{lemma}
 \begin{proof}[Proof Sketch]
-	Let $q_d$ be the probability that $\PBS$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = d$. In each step, with probability $\geq \frac{1}{k}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq 1 - \frac{1}{k}$ it goes one step further from $\astar$. Hence, $q_d \geq $ the probability that the random walk starting at position $r$ reaches position $0$ within $3n$ steps. Detailed analysis of the random walk gives $q_d \geq (\frac{1}{k-1})^d$.
+	Let $q_d$ be the probability that $\PBS$-Random-Walk returns a satisfying assignment for $F$ given $\dist{\astar}{\alpha} = d$. In each step, with probability $\geq \frac{1}{k}$ the assignment $\alpha$ goes one step closer to $\astar$ and with probability $\leq 1 - \frac{1}{k}$ it goes one step further from $\astar$. Hence, $q_d \geq $ the probability that the random walk starting at position $d$ reaches position $0$ within $3n$ steps. Detailed analysis of the random walk gives $q_d \geq (\frac{1}{k-1})^d$.
 \end{proof}
 
 %Do we need this?
@@ -98,18 +98,18 @@ With $\PBS$-Random-Walk, we have a randomized algorithm for $\SAT$:\par
 	}
 	{return NO}
 \end{algorithm}
-\begin{theorem}
+\begin{lemma}[\cite{Schoning99}]
 	If $F$ is satisfiable, each iteration of the for-loop in \textnormal{Randomized-}$\SAT$ returns a satisfying assignment with probability $\geq (\frac{k}{2(k-1)})^n$
-\end{theorem}
+\end{lemma}
 \begin{proof}
-	Fix a satisfying assignment $\astar$ for $F$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=d) = {n \choose d}{2}^{-n}$. With \textbf{Theorem 1}, we have:
+	Fix a satisfying assignment $\astar$ for $F$, for the random initial assignment $\alpha$, $\Pr(\dist{\astar}{\alpha}=d) = {n \choose d}{2}^{-n}$. With \textbf{Lemma 1}, we have:
 	\begin{align*}
 	&\Pr(\textnormal{Success in an iteration}) 
 	\geq \sum_{d=0}^{n} {n \choose d} 2^{-n} \cdot \big(\frac{1}{k-1}\big)^{d} 
 	\geq \big(\frac{1}{2}\big)^{n} (1 + \frac{1}{k-1}) ^n = \big(\frac{k}{2(k-1)}\big)^{n}
 	\end{align*}
 \end{proof}
-We can then amplify the probability by setting the number of iterations $m = \O((\frac{2(k-1)}{k})^n) = \O\big((2(1-\frac{1}{k}))^n\big)$(we use $\O$ to suppress the polynomial factor in $n$). Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O\big((2(1-\frac{1}{k}))^n\big)$.
+We can then amplify the probability by setting the number of iterations $m = \O((\frac{2(k-1)}{k})^n) = \O\big((2(1-\frac{1}{k}))^n\big)$. Each iteration clearly runs in polynomial time and the overall runtime for the randomized algorithm is $\O\big((2(1-\frac{1}{k}))^n\big)$.
 \section{Derandomization with Local Search\cite{Dantsin02}}
 \paragraph{} Notice that in the randomized algorithm, randomness is used in two parts. One is in $\PBS$-Random-Walk and the other one is to find an assignment $\alpha$ that serves as the center of Hamming Ball $\ball{r}{\alpha}$. Both of them needs to be derandomized. \par 
 \subsection{Derandomization of {$\PBSbf$}}
@@ -130,59 +130,59 @@ First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorith
 	}
 	{return NO}
 \end{algorithm}
-\begin{theorem}
+\begin{lemma}
 	$\PBS \textnormal{-Recursion}$ solves $\PBS$ in $\O(k^r)$ time.
-\end{theorem}
+\end{lemma}
 \begin{proof}
 	The running time is straightforward. Each clause has at most $k$ literals and hence each node in the recursion tree has at most $k$ branches. The depth of the recursion three is at most $r$. Hence, there are at most $k^r$ leaves in the recursion tree. The overall runtime is $\O(k^r)$. \par 
-	The correctness can be seen by drawing analogy to the random walk algorithm. Let $\astar$ be the satisfying assignment such that $\dist{\astar}{\alpha} \leq r$. Then there exists a ``lucky" random walk from $\alpha$ to $\astar$ that takes $\leq r$ steps, that is, in each step we move one step closer to $\astar$ and never makes a wrong move. Notice that if we never makes a wrong move, we will never change the assignment of a variable for more than once. \par 
-	Now consider the recursion algorithm, in each recursive step we choose a clause $C$ not satisfied by $\alpha$ and we know $C$ is satisfied by $\astar$. Hence, at least one of the literals in $C$ does not comply with $\astar$. Now instead of guessing randomly which is the right literal to flip as in the random walk algorithm, we try all possibilities and at least one of them would be a good move, giving us $\dist{\astar}{\alpha^{[l = 1]}} = r - 1$. Moreover, if we make a good move, we do not need to change the assignment of that literal in the future. We can then assign that value permanently and search using $F^{[l=1]}$ and $\alpha^{[l=1]}$. Hence, this is a depth-first-search algorithm that finds the "lucky" path from $\alpha$ to $\astar$.
+	The correctness can be seen by drawing analogy to the random walk algorithm. Let $\astar$ be the satisfying assignment such that $\dist{\astar}{\alpha} \leq r$. Then there exists a ``lucky" random walk from $\alpha$ to $\astar$ that takes exactly $\dist{\astar}{\alpha}$ steps, that is, in each step we move one step closer to $\astar$ and never makes a wrong move. Notice that if we never makes a wrong move, we will never change the assignment of a variable for more than once. \par 
+	Now consider the recursion algorithm, in each recursive step we choose a clause $C$ not satisfied by $\alpha$ and we know $C$ is satisfied by $\astar$. Hence, at least one of the literals in $C$ has a different value from $\astar$. Now instead of guessing randomly which is the right literal to flip as in the random walk algorithm, we try all possibilities and at least one of them would be a correct move, giving us $\dist{\astar}{\alpha^{[l = 1]}} = r - 1$. Moreover, if we make a good move, we do not need to change the assignment of that literal in the future. We can then assign that value permanently and search using $F^{[l=1]}$ and $\alpha^{[l=1]}$. Hence, this is a depth-first-search algorithm that searches for the ``lucky" path from $\alpha$ to $\astar$.
 \end{proof}
 
 \begin{note}
-	$\PBS$-Recursion is much faster than enumerating all elements in the Hamming Ball because we are indeed performing an informed search. We only look at unsatisfied clauses and hence prune out many unnecessary branches.
+	$\PBS$-Recursion is faster than enumerating all elements in the Hamming Ball because we are indeed performing an informed search. We only look at unsatisfied clauses and hence prune out many unnecessary branches.
 \end{note}
 \subsection{Derandomization Using Covering Code}
 \paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code. \par 
 \begin{definition}[Covering Code]
-	A Covering Code of length $n$, $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
+	A (binary) Covering Code of length $n$ and radius $r$, $\cc_r \subseteq \bits^n$ is defined as: $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
 \end{definition}
-\begin{lemma}[Bounding the volume of a Hamming Ball of radius $r$]
+\begin{lemma}[Bounding the volume of a Hamming Ball of radius $r$\cite{Dantsin02}]
 	\begin{align*}
 	V(r) = \sum_{i = 0}^{n} {n \choose i}
 	\end{align*}
-	Let $\rho = r/n$. If $0 < \rho \leq 1/2$, then $V(r)$ can be estimated using: [citation needed]
+	Let $\rho = r/n$. If $0 < \rho \leq 1/2$, then $V(r)$ can be estimated as follows, cf. \cite[Lemma 2.4.4]{Cohen97} 
 	\begin{align*}
 	\frac{1}{\sqrt{8n\rho(1-\rho)}} \cdot 2^{h(\rho)n} \leq V(r) \leq 2^{h(\rho)n}
 	\end{align*}
 	where $h(\rho) = -\rho \log_2 \rho - (1-\rho)\log_2(1-\rho)$ is the binary entropy function.
 \end{lemma}
-\begin{theorem}
+\begin{lemma}[\cite{Dantsin02}]
 	There exists a covering code $\cc_r$ of length $n$ and its size $|\cc_r|$ is at most $\lceil n\cdot 2^n / V(r) \rceil$.
-\end{theorem}
+\end{lemma}
 \begin{proof}
-	We give a probabilistic argument. Suppose we choose $ n\cdot 2^n / V(r)$ assignments from $\bits^n$ uniformly and independently to form $\cc_r$. Now fixed an assignment $\alpha$. The probability that $\alpha$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc_r$ is exactly $V(r)/2^n$. 
+	We give a probabilistic argument. Suppose we randomly choose $ n\cdot 2^n / V(r)$ assignments from $\bits^n$ uniformly and independently to form $\cc_r$. Now fixed an assignment $\alpha$. The probability that $\alpha$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc_r$ is exactly $V(r)/2^n$. 
 	\begin{align*}
 	\Pr(\text{$\alpha$ is not covered}) = \Big(1-\frac{V(r)}{2^n}\Big)^{n\cdot \frac{2^n}{V(r)}} \leq e^{-n}
 	\end{align*}
-	By taking a union bound, the probability that $\cc_r$ is a covering code $\geq 1 - 2^n\cdot e^{-n} > 0$. Hence, such a covering code exists. 
+	By taking a union bound over all $2^n$ possible assignments, the probability that $\cc_r$ is a covering code $\geq 1 - 2^n\cdot e^{-n} > 0$. Hence, such a covering code exists. 
 \end{proof}
-Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corollary:
+Combining \textbf{Lemma 4} and \textbf{Lemma 5}, we have the following corollary:
 \begin{corollary}
-	Let $0 < \rho \leq 1/2$ and let $\beta(n) = \sqrt{8n\rho(1-\rho)}$. For all $n$, there exists a covering code $\cc$ of length $n$, radius $\rho n$ and size at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$.
+	Let $0 < \rho \leq 1/2$ and let $\beta(n) = \sqrt{8n\rho(1-\rho)}$. For all $n$, there exists a covering code $\cc_{\rho n}$ of length $n$, radius $\rho n$ and size at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$.
 \end{corollary}
-\begin{theorem}
+\begin{lemma}[\cite{Dantsin02}]
 	A covering code of length $n$ and size at most $n^2\beta(n)\cdot 2^{(1-h(\rho))n}$ can be constructed in $\O(2^{3n})$ time.
-\end{theorem}
+\end{lemma}
 \begin{proof}
-	Notice that constructing a covering code is indeed a set cover problem with $2^n$ sets and $2^n$ elements. There is a well-known greedy algorithm that gives a $\log(m)$-approximation[citation needed] to the set cover problem. In each iteration, we pick the Hamming Ball that covers the largest number of not-yet-covered elements. We can associate each Hamming Ball with the number of not-yet-covered elements that is covers. In each iteration, we pick a Hamming Ball greedily and update the numbers for all remaining Balls. This takes $\poly(n) \cdot 2^n \cdot 2^n = \poly(n) \cdot 2^{2n}$ time. There are at most $2^n$ iterations. Hence, the overall running time is $\O(2^{3n})$. \par 
+	Notice that constructing a covering code is indeed a set cover problem with $2^n$ sets and $2^n$ elements. There is a well-known greedy algorithm that gives a $\log(m)$-approximation\cite{Hochbaum97} to the set cover problem. In each iteration, we pick the Hamming Ball that covers the largest number of not-yet-covered elements. We can associate each Hamming Ball with the number of not-yet-covered elements that it covers. In each iteration, we pick a Hamming Ball greedily and update the numbers for all remaining Balls. This takes $\poly(n) \cdot 2^n \cdot 2^n = \poly(n) \cdot 2^{2n}$ time. There are at most $2^n$ iterations. Hence, the overall running time is $\O(2^{3n})$. \par 
 	From \textbf{Corollary 1}, we know the optimal size of the covering code is at most $n\beta(n)\cdot 2^{(1-h(\rho))n}$. The algorithm above gives a $\log(m)$ approximation. Note that the size of the problem $m = 2^n$. Hence, the size of the covering code constructed is at most $\log(2^n) \cdot n\beta(n)\cdot 2^{(1-h(\rho))n} = n^2\beta(n)\cdot 2^{(1-h(\rho))n}$
 \end{proof}
-\begin{theorem}
+\begin{lemma}
 	Let $d\geq 2$ be a divisor of $n$ and $0<\rho \leq 1/2$. Then a covering code of length $n$ and size at most $\O(2^{(1-h(\rho))n})$ can be constructed in time $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$.
-\end{theorem}
+\end{lemma}
 \begin{proof}
-	Using \textbf{Theorem 5}, we can construct a covering code $\cc'$ of length $\frac{n}{d}$, radius $\frac{\rho n}{d}$. Now define $\cc = \{c_1c_2...c_d:c_1,c_2,...,c_d \in \cc'\}$ to be the covering code of length $n$, radius $\rho n$, that is, $\cc$ is the set of all concatenations of $d$ codes from $\cc'$.\par 
+	Using \textbf{Lemma 6}, we can construct a covering code $\cc'$ of length $\frac{n}{d}$, radius $\frac{\rho n}{d}$. Now define $\cc = \{c_1c_2...c_d:c_1,c_2,...,c_d \in \cc'\}$ to be the covering code of length $n$, radius $\rho n$, that is, $\cc$ is the set of all concatenations of $d$ codes from $\cc'$.\par 
 	It is easy to verify that $\cc$ is a covering code of length $n$. For any $\alpha \in \bits^n$, split $\alpha$ into $d$ blocks of length $\frac{n}{d}$ i.e. $\alpha = \alpha_1\alpha_2...\alpha_d$. For each $\alpha_i$, there exists a code $c_i \in \cc'$ such that $\dist{\alpha_i}{c_i} \leq \frac{\rho n}{d}$. Now the code $c = c_1c_2...c_d \in \cc$ and $\dist{\alpha}{c} \leq \rho n$. \par 
 	The size of $\cc'$ is at most $n^2\beta(n)\cdot 2^{(1-h(\rho))n/d}$ and constructing it takes $\O(2^{3n/d})$ time. The size of $\cc = |\cc'|^d \leq n^{2d}\beta(n)^d\cdot 2^{(1-h(\rho))n} = \O(2^{(1-h(\rho))n})$. Hence, the time taken to construct $\cc$ is $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$.
 \end{proof}
@@ -195,14 +195,14 @@ Combining \textbf{Lemma 1} and \textbf{Theorem 4}, we have the following corolla
 	\Input{A $\CNF$ formula $F$ with $n$ variables}
 	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
 	\BlankLine
-	Initialization: Compute covering code $\cc$\\
-	\ForEach{code $c \in \cc$}{
+	Initialization: Compute covering code $\cc_{\rho n}$\\
+	\ForEach{code $c \in \cc_{\rho n}$}{
 		$\astar$ = $\PBS$-Recursion($F,c,\rho n$)\\
 		\lIf{$\astar$ satisfies $F$}{return $\astar$}
 	}
 	{return NO}
 \end{algorithm}
-It is easy to see that Deterministic $\SAT$ returns a satisfying assignment if $F$ is satisfiable. Consider a satisfying assignment $\astar$. By definition of the covering code, $\exists c \in \cc$ such that $\dist{c}{\astar} \leq \rho n$. Hence, the depth-first-search $\PBS$-Recursion($F,c,\rho n$) would be able to find $\astar$. \par
+It is easy to see that Deterministic $\SAT$ returns a satisfying assignment if $F$ is satisfiable. Consider a satisfying assignment $\astar$. By definition of the covering code, $\exists c \in \cc_{\rho n}$ such that $\dist{c}{\astar} \leq \rho n$. Hence, the depth-first-search $\PBS$-Recursion($F,c,\rho n$) would be able to find $\astar$. \par
 The running time $T(n,\rho,d)$ involves computing the covering code,  $\O(2^{3n/d}+ 2^{(1-h(\rho))n})$ and doing the search, $\O(2^{(1-h(\rho))n})\cdot \O(k^{\rho n})$. That is,
 \begin{align*}
 T(n,\rho,d) = \O(2^{3n/d}+ 2^{(1-h(\rho))n}) + \O(2^{(1-h(\rho))n})\cdot \O(k^{\rho n})
@@ -217,17 +217,17 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\
 \end{align*} 
 Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, we observe that the parameter $k$ in the overall running time comes from the running time of $\PBS$-Recursion, $\O(k^{\rho n})$. If we can improve its performance to $\O((k-1)^{\rho n})$, we arrive at a $\O\big((2(1 - \frac{1}{k}))^n\big)$ running time which is on par with the randomized algorithm.
 \section{Improving on the Derandomization\cite{Moser11}}
-\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
+\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls while attempting the reduce the number of literals in the clauses. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
 \subsection{k-nary Covering Code}
-\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define $k$-Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is less than $r$. 
-\begin{lemma}[Bounding the volume of a $k$-Hamming Ball of radius r]
+\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define $k$-Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is at most $r$. 
+\begin{lemma}[Bounding the volume of a $k$-Hamming Ball of radius r\cite{Moser11}]
 	Let $V^k(r)$ denotes the volume of a $k$-Hamming Ball centered at $w$. Consider the set $S = \{w' \in \kbits^t: \dist{w}{w'} = r\}$. There are ${t \choose r}$ possible ways to choose the coordinates that are different in $w$ and $w'$. Each coordinate has $k-1$ choices of value. Hence,
 	\begin{align*}
 	V^k(r) > |S| \geq {t \choose r}(k-1)^r
 	\end{align*}
 \end{lemma}
 \begin{definition}[k-nary Covering Code]
-	A k-nary Covering Code of length $t$ and radius $r$, $\cc_r^t \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^t$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\kbits^t$. 
+	A k-nary Covering Code of length $t$ and radius $r$, $\cc_r^k \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^k$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r^k$ covers the set $\kbits^t$. 
 \end{definition}
 \begin{lemma}
 	For any $t,k \in \mathbb{N}$, there exists a k-nary covering code $\cc^k_r \in \kbits^t$ of radius $r$ such that 
@@ -236,10 +236,10 @@ Notice that the performance is worse than the randomized algorithm and we will s
 	\end{align*}
 \end{lemma}
 \begin{proof}
-	The proof is similar to the probabilistic proof for Theorem 4. Suppose we choose $\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}$ assignments from $\kbits^t$ uniformly and independently to form $\cc^k_r$. Now fixed an member $w \in \kbits^t$. The probability that $w$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc^k_r$ is exactly $V^k(r)/k^t$. 
+	The proof is similar to the probabilistic proof for \textbf{Lemma 5}. Suppose we randomly choose $\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}$ members from $\kbits^t$ uniformly and independently to form $\cc^k_r$. Now fixed an member $w \in \kbits^t$. The probability that $w$ is covered by the Hamming Ball centered at a randomly chosen member $c \in \cc^k_r$ is exactly $V^k(r)/k^t$. 
 	\begin{align*}
-	\Pr(\text{$w$ is not covered}) &= \Bigg(1-\frac{V^k(r)}{k^r}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
-	&<\Bigg(1-\frac{{t \choose r}(k-1)^r}{k^r}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
+	\Pr(\text{$w$ is not covered}) &= \Bigg(1-\frac{V^k(r)}{k^t}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
+	&<\Bigg(1-\frac{{t \choose r}(k-1)^r}{k^t}\Bigg)^{\frac{t\ln(k)k^t}{{t \choose r}(k-1)^r}}\\
 	&\leq e^{-t\ln(k)} \leq k^{-t}
 	\end{align*}
 	By taking a union bound over all $k^t$ members from $\kbits^t$, the probability that $\cc^k_r$ is a covering code $> 1 - k^t\cdot k^{-t} > 0$. Hence, such a covering code exists. 
@@ -249,10 +249,19 @@ Notice that the performance is worse than the randomized algorithm and we will s
 
 
 \begin{thebibliography}{9}
+	
+\bibitem{Cohen97}
+G. Cohen, I. Honkala, S. Litsyn and A. Lobstein.
+\textit{Covering Codes.}
+Mathematical Library, vol. 54, Elsevier, Amsterdam, (1997).
 \bibitem{Dantsin02}
 E. Dantsin, A. Goerdt, E. A. Hirsch, R. Kannan, J. Kleinberg, C. Papadimitriou, O. Raghavan, and U. Sch\"{o}ning. 
 \textit{A deterministic $(2-2/(k+1))n$ algorithm for k-SAT based on local search.} Theoretical Computer Science 289, (2002).
 
+\bibitem{Hochbaum97}
+D.S. Hochbaum (Ed.).
+\textit{Approximation Algorithms for NP-hard Problems.}
+PWS Publishing Company, MA, (1997).
 \bibitem{Moser11}
 R. Moser and D. Scheder.
 \textit{A Full Derandomization of Sch\"{o}ning’s k-SAT Algorithm.} Proceedings of the 44th Annual ACM Symposium on Theory of Computing, (2011).
