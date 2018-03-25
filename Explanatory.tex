@@ -10,11 +10,13 @@
 \newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
 \newcommand{\dist}[2]{d_H(#1,#2)}
 \newcommand{\ball}[2]{B_{#1}(#2)}
+\newcommand{\ballk}[2]{B^k_{#1}(#2)}
 \newcommand{\astar}{\alpha^*}
 \newcommand{\PBS}{\textnormal{Promise-Ball-$\SAT$}}
 \newcommand{\PBSbf}{\textbf{Promise-Ball-$\SATbf$}}
 \newcommand{\cc}{\mathcal{C}}
 \newcommand{\bits}{\{0,1\}}
+\newcommand{\kbits}{\{1,...,k\}}
 \newcommand{\poly}{\textnormal{poly}}
 \renewcommand{\Pr}{\textnormal{Pr}}
 \renewcommand{\O}{\mathcal{O}^*}
@@ -216,7 +218,10 @@ Notice that the performance is worse than the randomized algorithm and we will s
 \section{Improving on the Derandomization\cite{Moser11}}
 \paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
 \subsection{k-nary Covering Code}
-%k-nary Covering Code
+\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is less than $r$.
+\begin{definition}[k-nary Covering Code]
+	A k-nary Covering Code of length $t$, $\cc_r^t \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^t$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\kbits^t$.
+\end{definition}
 \subsection{Faster $\PBSbf$ Algorithm}
 %Faster Recursion
 
