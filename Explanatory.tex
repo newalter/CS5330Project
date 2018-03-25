@@ -10,13 +10,11 @@
 \newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
 \newcommand{\dist}[2]{d_H(#1,#2)}
 \newcommand{\ball}[2]{B_{#1}(#2)}
-\newcommand{\ballk}[2]{B^k_{#1}(#2)}
 \newcommand{\astar}{\alpha^*}
 \newcommand{\PBS}{\textnormal{Promise-Ball-$\SAT$}}
 \newcommand{\PBSbf}{\textbf{Promise-Ball-$\SATbf$}}
 \newcommand{\cc}{\mathcal{C}}
 \newcommand{\bits}{\{0,1\}}
-\newcommand{\kbits}{\{1,...,k\}}
 \newcommand{\poly}{\textnormal{poly}}
 \renewcommand{\Pr}{\textnormal{Pr}}
 \renewcommand{\O}{\mathcal{O}^*}
@@ -139,12 +137,12 @@ First of all, we derandomize $\PBS$-Random-Walk with a simple recursion algorith
 \end{proof}
 
 \begin{note}
-	$\PBS$-Recursion is much faster than enumerating all elements in the Hamming Ball because we are indeed performing an informed search. We only look at unsatisfied clauses and hence prune out many unnecessary branches.
+	$\PBS$-Recursion is much faster than enumerating all elements in the Hamming Ball because we are indeed performing an informed search. We only look at unsatisfied clauses and can hence prune out many unnecessary branches.
 \end{note}
 \subsection{Derandomization Using Covering Code}
 \paragraph{} Next, we derandomize the choices of initial assignment $\alpha$ with Covering Code. \par 
 \begin{definition}[Covering Code]
-	A Covering Code of length $n$, $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
+	A Covering Code of length $n$, $\cc_r \subseteq \bits^n$ is defined as $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ that cover the set $\bits^n$.
 \end{definition}
 \begin{lemma}[Bounding the volume of a Hamming Ball of radius $r$]
 	\begin{align*}
@@ -217,14 +215,19 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\
 Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, we observe that the parameter $k$ in the overall running time comes from the running time of $\PBS$-Recursion, $\O(k^{\rho n})$. If we can improve its performance to $\O((k-1)^{\rho n})$, we arrive at a $\O\big((2(1 - \frac{1}{k}))^n\big)$ running time which is on par with the randomized algorithm.
 \section{Improving on the Derandomization\cite{Moser11}}
 \paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a large number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls. By repeating this process, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
-\subsection{k-nary Covering Code}
-\paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is less than $r$.
-\begin{definition}[k-nary Covering Code]
-	A k-nary Covering Code of length $t$, $\cc_r^t \subseteq \kbits^t$ is defined as $\forall w \in \kbits^t, \exists c \in \cc_r^t$ such that $w \in \ballk{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\kbits^t$.
-\end{definition}
+\subsection{k-ary Covering Code}
+%k-nary Covering Code
 \subsection{Faster $\PBSbf$ Algorithm}
-%Faster Recursion
+Using the previous tool, we are now ready to present the derandomised version of Sch\"{o}ning's algorithm. At first, before doing anything else, the algorithm will firstly compute a code $\mathcal{C} \subseteq {1, ...,k}^t$, where each element $c \in mathcal{C}$ has a radius of $\frac{t}{k}$, where $t$ is a some constant.\par
 
+%% Mention the size of the resulting code here.
+
+Upon the input of some k-CNF, the algorithm greedily tries to find the maximam set of clauses that are independent of each other. Let's call this set $\mathcal{G} = \{\mathcal{C}_1, \mathcal{C}_2, ...,\mathcal{C}_m\}$. Now we can break the problem instance into 2 cases: \par
+
+Base case: The number of independent clauses is less than $t$. In which case we enumerate all possible assignments (of which there are $2^{km}$) and then call algorithm 3 with that assignment, with a radius of $r$. Essentially, this is just a search around all the possible assignments of distance at most $r$ away. Since we've set this to only happen when the number of clauses is below a certain constant, we have the number of possible assignments, $2^{km}$ of them is actually also just a constant. And since each search is bounded by $\O(k^r)$ time, we have that the base case runs in the same amount of time, since the search is only called a constant number of times.\par
+
+On the other hand, if the number of independent clauses is more than $t$. Then the algorithm should select a set $H \subseteq G$ such that $|H|$ is of size exactly $t$. 
+%then show the decomp and what does it help. 
 
 \begin{thebibliography}{9}
 \bibitem{Dantsin02}
