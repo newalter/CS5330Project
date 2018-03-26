@@ -42,10 +42,10 @@
 The explanatory report is organized in the following manner. In section 2, we introduce some basic notations and definitions used in this paper. In section 3, we present Sch\"{o}ning's original randomized algorithm\cite{Schoning99} for $\SAT$, reorganized to facilitate our analysis for derandomization. In section 4, a derandomization algorithm based on local search by \cite{Dantsin02} is given. In section 5, we present an improvement by \cite{Moser11} that improves the derandomization algorithm and attains performance arbitrarily close to the randomized version, thereby claiming a full derandomization.
 
 \section{Preliminaries}
-\paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $k$ pairwise independent literals. A literal $u$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
-A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $u = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $u = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. Alternatively, for a fixed set of variables $V=\{x_1,x_2,...,x_n\}$, an assignment $\alpha$ can be considered as a $n$-bit binary string where the $i$th bit gives the value of $x_i$.\par 
+\paragraph{} An input instance of a $\SAT$ problem is a $\CNF$(Conjunctive Normal Form) formula $F$ with $n$ variables. $F$ contains a finite set of clauses where each clause $C$ contains at most $k$ pairwise independent literals. A literal $l$ is either a variable $x$ or a complemented variable $\bar{x}$. Let $V$ denote the set of variables in $F$. \par 
+A truth assignment $\alpha: V\rightarrow \{0,1\}$ assigns each variable a boolean value. If a literal $l = x$, it is satisfied by $\alpha$ iff $\alpha(x) = 1$. If $l = \bar{x}$, it is satisfied by $\alpha$ iff $\alpha(x) = 0$. A clause $C$ is satisfied by $\alpha$ if at least one of its literals are satisfied by $\alpha$. A formula $F$ is satisfied by $\alpha$ if all clauses are satisfied by $\alpha$. Alternatively, for a fixed set of variables $V=\{x_1,x_2,...,x_n\}$, an assignment $\alpha$ can be considered as a $n$-bit binary string where the $i$th bit gives the value of $x_i$.\par 
 Given two assignments $\alpha$ and $\beta$, the Hamming distance between them, denoted as $\dist{\alpha}{\beta}$, is defined to be the number of variables $x \in V$ where $\alpha(x) \neq \beta(x)$. A Hamming Ball centered at $\alpha$ with radius $r$ is defined to be $\ball{r}{\alpha} = \{\beta: \dist{\alpha}{\beta} \leq r\}$, that is, all assignments whose Hamming distance from $\alpha$ is less than or equals to $r$. For assignments of $n$ variables, let $V(r)$ denote the volume of a Hamming Ball of radius $r$, that is, the number of assignments in the Hamming Ball.\par 
-For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denote the assignment that is derived from $\alpha$ after setting $l$ to be $1$. Similarly for a formula $F$, we use $F^{[l = 1]}$ to denote the new formula obtained after setting $l$ to be $1$. \par 
+For an assignment $\alpha$ and a literal $l$, we use $\alpha^{[l = 1]}$ to denote the assignment that is derived from $\alpha$ after setting $l$ to be $1$. Similarly for a formula $F$, we use $F^{[l = 1]}$ to denote the new formula obtained after setting $l$ to be $1$. Likewise, we use $F^{[\beta]}$ to denote the new formula obtained after applying a partial assignment $\beta$.\par 
 \begin{definition}[\PBS\cite{Moser11}]
 	An instance of the $\PBS$ problem $(F,\alpha,r)$ consists of a $\CNF$ formula $F$, an assignment $\alpha$ for $F$ and a natural number $r$. With the promise that the Hamming Ball $\ball{r}{\alpha}$ contains a satisfying assignment for $F$. Find any satisfying assignment.
 \end{definition}
@@ -217,7 +217,7 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\
 \end{align*} 
 Notice that the performance is worse than the randomized algorithm and we will see how to improve it in the next section. In particular, we observe that the parameter $k$ in the overall running time comes from the running time of $\PBS$-Recursion, $\O(k^{\rho n})$. If we can improve its performance to $\O((k-1)^{\rho n})$, we arrive at a $\O\big((2(1 - \frac{1}{k}))^n\big)$ running time which is on par with the randomized algorithm.
 \section{Improving on the Derandomization\cite{Moser11}}
-\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls while attempting the reduce the number of literals in the clauses. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-nary covering code which is similar to the binary covering code in section 4.2.
+\paragraph{} Notice that in the previous section, instead of searching the whole space of possible assignments, we cover the whole space with a number of Hamming Balls and search in each Hamming Ball. The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls while attempting the reduce the number of literals in the clauses. Another key observation is that whenever we fix an assignment for a variable, all clauses containing the variable would have one less literal to be considered. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. First of all, we look at $k$-ary covering code which is similar to the binary covering code in section 4.2.
 \subsection{k-ary Covering Code}
 \paragraph{}Consider the set $\kbits^t$, for any element $w,w' \in \kbits^t$, let $w_i$ and $w'_i$ denote the $i$th coordinate of $w$ and $w'$ respectively. The Hamming distance $\dist{w}{w'}$ is similarly defined to be the number of coordinates that $w$ and $w'$ do not agree, that is, $\dist{w}{w'} = |\{i:w_i \neq w'_i, 1\leq i \leq t \}|$. Also we can define $k$-Hamming Balls $\ballk{r}{w} = \{w':\dist{w}{w'} \leq r\}$, that is, all elements whose Hamming distance from $w$ is at most $r$. 
 \begin{lemma}[Bounding the volume of a $k$-Hamming Ball of radius r\cite{Moser11}]
@@ -260,31 +260,31 @@ Combining \textbf{Lemma 9} and \textbf{Lemma 10}, by choosing $r = \rho t = \fra
 |\cc^k_{{t/k}}| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose t/k}(k-1)^{t/k}} \right \rceil \leq \frac{t^2 k^t (k-1)^{(k-1)t/k}}{k^t(k-1)^{(k-1)t/k}} \leq t^2(k-1)^{t-2t/k}
 \end{align*}
 \subsection{Faster $\PBSbf$ Algorithm}
-Using the previous tool, we are now ready to present the derandomized version of Sch\"{o}ning's algorithm. At first, before doing anything else, the algorithm will firstly compute a k-ary covering code $\mathcal{C} \subseteq \kbits^{t}$, of radius $\frac{t}{k}$, where $t$ is a some constant.\par
+Using the previous tool, we are now ready to present the fully derandomized version of Sch\"{o}ning's algorithm by giving a faster algorithm that solves $\PBS$ in $\O((k-1)^r)$ time. At first, before doing anything else, the algorithm will firstly compute a k-ary covering code $\mathcal{C} \subseteq \kbits^{t}$, of radius $\frac{t}{k}$, where $t$ is a some constant.\par
 
-Upon the input of some k-CNF, the algorithm greedily tries to find the maximal set of clauses that are independent of each other. Let's call this set $G = \{C_1, C_2, ...,C_m\}$. In other words, we want that any two clauses do not share any variables, and by maximal we mean all other unsatisfied clauses (outside of $G$) share at least one literal with some $C_i$. Now we can break the problem instance into 2 cases: \par
+Upon the input of some $\CNF$ and a assignment $\alpha$, the algorithm greedily tries to find the maximal set of unsatisfied clauses that are independent of each other. Let's call this set $G = \{C_1, C_2, ...,C_m\}$. In other words, we want that any two clauses do not share any variables, and by maximal we mean all other unsatisfied clauses (outside of $G$) share at least one literal with some $C_i$. Now we can break the problem instance into 2 cases: \par
 
-Base case: The number of independent clauses $m \leq t$. In which case we enumerate all possible assignments, $\beta$ for $G$ (of which there are $2^{km}$) and then assign the values to the formula F to obtain $F^{[\beta]}$. Since we have that for every construction of $G$, every unsatisfied clause should share at least a literal with one of the clauses in $G$, after we apply $\beta$ to obtain $F^{[\beta]}$, each unsatisfied clause should have at most $k-1$ literals. Since we've set this to only happen when the number of clauses is below a certain constant, we have the number of possible assignments, $2^{km}$ of them is actually also just a constant. And since each search is bounded by $\O((k-1)^r)$ time, we have that the base case runs in the same amount of time, since the search is only called a constant number of times.\par
+Base case: The number of independent clauses $m \leq t$. In which case we enumerate all possible assignments, $\beta$ for $G$ (of which there are $2^{km}$) and then assign the values to the formula $F$ to obtain $F^{[\beta]}$. Since we have that for every construction of $G$, every unsatisfied clause should share at least a literal with one of the clauses in $G$, after we apply $\beta$ to obtain $F^{[\beta]}$, that literal receives a permanent assignment and each unsatisfied clause now have at most $k-1$ literals. Also, since $t$ is a constant and $m \leq t$, we have the number of possible assignments, $2^{km}$ of them is actually also just a constant. And now calling $\PBS$-Recursion on $F^{[\beta]}$ takes $\O((k-1)^r)$ time, we have that the base case runs in the desired amount of time, since the search is only called a constant number of times.\par
 
 On the other hand, if the number of independent clauses is more than $t$. Then the algorithm should select a set $H \subseteq G$ such that $H$ is of size exactly $t$. Then, we will use the previously constructed k-ary covering code to decide how to choose assignments for this set of clauses $H$.\par
 
 To do this, let $w \in \kbits^{t}$, so $w = (w_1, w_2, ..., w_t)$ where each $w_i$ would be within the range of $1$ to $k$. We will assign the $w_i^{th}$ literal in the $i^{th}$ clause in $H$ to be satisfied. We shall denote this change in assignment to be $\alpha[w]$ from some initial assignment $\alpha$. Note that we need to fix some arbitrary ordering on the clauses. \par
 
-What the algorithm would do, is recursively try to solve the resulting formula obtained after trying all the $w \in \mathcal{C}$. 
+What the algorithm would do, is to recursively try to solve the resulting formula obtained after trying all the $w \in \mathcal{C}$. 
 
 We also need to set a limit of the radius of how far we are to deviate from our original assignment. This bound is necessary for the running time of the algorithm.\par
 
-Notice that the covering code $\mathcal{C}$ is of radius $\frac{t}{k}$. What this means is that assuming some satisfying assignment $\alpha^*$ exists, and letting $\alpha$ be some assignment that leaves some $t$ clauses unsatisfied and $w^*$ be some coordinate that corresponds to the satisfying assignment $\alpha^{*}$, there exists an element of the covering code $w' \in \mathcal{C}$ that is at most $\frac{t}{k}$ away from it. Thus $
-\alpha[w']$ should in the worst case increase the distance by at most $\frac{t}{k}$ whereas decrease the distance by at least $t - \frac{t}{k}$. Thus, we have that at each change in our assignment for the formula: \par
+Notice that the covering code $\mathcal{C}$ is of radius $\frac{t}{k}$. What this means is that assuming some satisfying assignment $\alpha^*$ exists, and letting $\alpha$ be an assignment that leaves some $t$ clauses unsatisfied and $w^*$ be some coordinates where $\alpha$ and $\astar$ differ in these $t$ clauses. Then we have $\dist{\astar}{\alpha[w^*]} = r-t$. By definition of the covering code, there exists an element of the covering code $w \in \mathcal{C}$ that is at most $\frac{t}{k}$ away from $w^*$. Thus $
+\alpha[w]$ should in the worst case increase the distance from $\astar$ by at most $\frac{t}{k}$ whereas decrease the distance by at least $t - \frac{t}{k}$. Thus, we have that at each change in our assignment for the formula: \par
 
 \begin{center}
-	$d_H(\alpha[w'], \alpha^{*}) \leq d_H(\alpha, \alpha^{*}) + \frac{t}{k} - (t - \frac{t}{k}) \leq r - (t - \frac{2t}{k})$
+	$d_H(\alpha[w], \alpha^{*}) \leq d_H(\alpha, \alpha^{*}) + \frac{t}{k} - (t - \frac{t}{k}) \leq r - (t - \frac{2t}{k})$
 \end{center}
 
-Essentially this implies that there exists some $w \in \mathcal{C}$ that when applied onto $\alpha$, the satisfying assignment should be that much closer. So we need to iterate through call the elements of the covering code and search for it.\par
+Essentially this implies that there exists some $w \in \mathcal{C}$ that when applied onto $\alpha$, the satisfying assignment should be that much closer. So we need to iterate through all the elements in the covering code and search for it.\par
 
 \begin{algorithm}[H]
-	\caption{ Faster-$\PBSbf$ }
+	\caption{ Faster-$\PBS$ }
 	\DontPrintSemicolon
 	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 	\Input{A $\CNF$ formula $F$ with $n$ variables, assignment $\alpha$, radius $r$, $\mathcal{C} \subseteq \{1,...,k\}^t$}
@@ -293,27 +293,27 @@ Essentially this implies that there exists some $w \in \mathcal{C}$ that when ap
 	\lIf{$\astar$ satisfies $F$}{return $\astar$}
 	\lElseIf{$r = 0$} {return NO}
 	\BlankLine
-	Find $G$ greedily as the maximal set of pairwise disjoint k-clauses from $F$ unsatisfied by $\alpha$\\
-	\If{$|G| \leq t$}{ 
+	Find $G$ greedily as the maximal set of independent unsatisfied clauses\\
+	\If{$|G| \leq t$}{
 		\ForEach{possible assignment $\beta$ to the variables in $G$}{
-			\lIf{$\PBS$-Recursion($F^{[\beta]}$, $\alpha$, $r$) returns an assignment}{return the assignment}
+			\lIf{$\PBS$\textnormal{-Recursion}($F^{[\beta]}$, $\alpha$, $r$) returns an assignment}{return the assignment}
 		}
-	}		
-	\Else {Let $H \subseteq G$ such that $|H| = t$
+	}	
+	\Else {Let $H \subseteq G$ such that $|H| = t$ \\
 	\ForEach{$w \in \mathcal{C}$} 
 	{
-		\lIf{Faster-$\PBSbf$(F, $\alpha[H, w]$, $r - (t - \frac{2t}{k})$) returns an assignment} {return the assignment}
+		\lIf{\textnormal{Faster-}$\PBS$($F$, $\alpha[H, w]$, $r - (t - \frac{2t}{k})$) returns an assignment} {return the assignment}
 	}
 	}
 	\end{algorithm}
 
-\subsubsection{Running time analysis}
-	To bound the number of leaves in this recursion tree, let $\delta = t-\frac{2t}{k}$, we note that at each level we make $|\mathcal{C}|$ calls and $r$ decreases by $t-\frac{2t}{k}$, and the height is at most $\frac{r}{\delta}$. Thus:
+\subsubsection{Running Time Analysis}
+	To bound the number of leaves in this recursion tree, let $\delta = t-\frac{2t}{k}$, we note that at each level we make $|\mathcal{C}|$ calls and $r$ decreases by $\delta = t-\frac{2t}{k}$, the height of the recursion tree is at most $\frac{r}{\delta}$. Thus:
 	\begin{align*}
-	\mathcal{C}^{r/\delta} &\leq (t^{2}(k-1)^{\delta})^{r/\delta}\\
+	|\mathcal{C}|^{r/\delta} &\leq (t^{2}(k-1)^{\delta})^{r/\delta}\\
 	&= ((k-1)t^{2/\delta})^{r}
 	\end{align*}
-	And since $t$ is some constant independent of the problem size, the running time is just: $\O((k-1)^{r})$.
+	And since $t$ is some constant independent of the problem size, the running time is just $\O((k-1)^{r})$. Combining with the argument from section 4.3, we achieve the desired overall performance of $\O((2(1-\frac{1}{k}))^n)$.
 \begin{thebibliography}{9}
 	
 \bibitem{Cohen97}
