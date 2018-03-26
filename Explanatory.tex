@@ -30,7 +30,7 @@
 
 
 \title{Explanatory Report on Full Derandomization of Sch\"{o}ning's $\SAT$ Algorithm}
-\author{}
+\author{Li Zeyong, Eldon Chung}
 \date{}
 
 \begin{document}
@@ -276,7 +276,7 @@ Essentially this implies that there exists some $w \in \mathcal{C}$ that when ap
 	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
 	\BlankLine
 	\lIf{$\astar$ satisfies $F$}{return $\astar$}
-	\lElseIf{$r = 0$} {return $NO$}
+	\lElseIf{$r = 0$} {return NO}
 	\BlankLine
 	Find $G$ greedily as the maximal set of pairwise disjoint k-clauses from $F$ unsatisfied by $\alpha$\\
 	\If{$|G| \leq t$}{ 
