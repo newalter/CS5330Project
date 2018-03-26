@@ -244,25 +244,10 @@ Notice that the performance is worse than the randomized algorithm and we will s
 	\end{align*}
 	By taking a union bound over all $k^t$ members from $\kbits^t$, the probability that $\cc^k_r$ is a covering code $> 1 - k^t\cdot k^{-t} > 0$. Hence, such a covering code exists. 
 \end{proof}
-We then try to approximate the size of the $k$-nary covering code with the following bound:
-\begin{lemma}[\cite{MacWilliams77}]
-	For $0<\rho \le 1/2$ and $t \in \mathbb{N}$, it holds that
-	\begin{align*}
-	{t \choose \rho t}\geq \frac{1}{\sqrt{8t\rho(1-\rho)}}\Big(\frac{1}{\rho}\Big)^{\rho t}\Big(\frac{1}{1-\rho}\Big)^{(1-\rho) t}
-	\end{align*} 
-	Choose $\rho = \frac{1}{k}$, we have
-	\begin{align*}
-	{t \choose t/k}\geq \frac{1}{\sqrt{8t}}(k)^{t/k}\Big(\frac{k}{k-1}\Big)^{(k-1) t/k} = \frac{k^t}{\sqrt{8t}(k-1)^{(k-1)t/k}}
-	\end{align*} 
-\end{lemma}
-	Combining \textbf{Lemma 9} and \textbf{Lemma 10}, by choosing $r = \rho t = \frac{t}{k}$, for sufficiently large $t$, we can approximate $|\cc^k_{t/k}|$ by
-\begin{align*}
-|\cc^k_{{t/k}}| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose t/k}(k-1)^{t/k}} \right \rceil \leq \frac{t^2 k^t (k-1)^{(k-1)t/k}}{k^t(k-1)^{(k-1)t/k}} \leq t^2(k-1)^{t-2t/k}
-\end{align*}
 \subsection{Faster $\PBSbf$ Algorithm}
 Using the previous tool, we are now ready to present the derandomised version of Sch\"{o}ning's algorithm. At first, before doing anything else, the algorithm will firstly compute a code $\mathcal{C} \subseteq {1, ...,k}^t$, where each element $c \in \mathcal{C}$ has a radius of $\frac{t}{k}$, where $t$ is a some constant.\par
 
-Upon the input of some k-CNF, the algorithm greedily tries to find the maximal set of clauses that are independent of each other. Let's call this set $\mathcal{G} = \{\mathcal{C}_1, \mathcal{C}_2, ...,\mathcal{C}_m\}$. Now we can break the problem instance into 2 cases: \par
+Upon the input of some k-CNF, the algorithm greedily tries to find the maximal set of clauses that are independent of each other. Let's call this set $G = \{\mathcal{C}_1, \mathcal{C}_2, ...,\mathcal{C}_m\}$. Now we can break the problem instance into 2 cases: \par
 
 Base case: The number of independent clauses is less than $t$. In which case we enumerate all possible assignments (of which there are $2^{km}$) and then call algorithm 3 with that assignment, with a radius of $r$. Essentially, this is just a search around all the possible assignments of distance at most $r$ away. Since we've set this to only happen when the number of clauses is below a certain constant, we have the number of possible assignments, $2^{km}$ of them is actually also just a constant. And since each search is bounded by $\O(k^r)$ time, we have that the base case runs in the same amount of time, since the search is only called a constant number of times.\par
 
@@ -308,7 +293,12 @@ Essentially this implies every time we apply $w$ onto $\alpha$, the satisfying a
 	\end{algorithm}
 
 \subsubsection{Running time analysis}
-
+	To bound the number of leaves in this recursion tree, we note that at each level we make $\mathcal{C}$ calls and $r$ decreases by $t-\frac{2t}{k}$. Letting $\delta = t-\frac{2t}{k}$. Thus:
+	\begin{align*}
+	\mathcal{C}^{r/\delta} &\leq (t^{2}(k-1)^{\delta})^{r/\delta}\\
+	&= ((k-1)t^{2/\delta})^{r}
+	\end{align*}
+	And since $t$ is some constant independent of the problem size, the running time is just: $(k-1)^{r}$.
 \begin{thebibliography}{9}
 	
 \bibitem{Cohen97}
@@ -323,12 +313,6 @@ E. Dantsin, A. Goerdt, E. A. Hirsch, R. Kannan, J. Kleinberg, C. Papadimitriou, 
 D.S. Hochbaum (Ed.).
 \textit{Approximation Algorithms for NP-hard Problems.}
 PWS Publishing Company, MA, (1997).
-
-\bibitem{MacWilliams77}
-F. J. MacWilliams and N. J. A. Sloane.
-\textit{The theory of error-correcting codes. II.}
-North-Holland Publishing Co., Amsterdam. North-Holland Mathematical Library, Vol. 16, (1977).
-
 \bibitem{Moser11}
 R. Moser and D. Scheder.
 \textit{A Full Derandomization of Sch\"{o}ning’s k-SAT Algorithm.} Proceedings of the 44th Annual ACM Symposium on Theory of Computing, (2011).
