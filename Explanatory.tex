@@ -260,8 +260,54 @@ We then try to approximate the size of the $k$-nary covering code with the follo
 |\cc^k_{{t/k}}| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose t/k}(k-1)^{t/k}} \right \rceil \leq \frac{t^2 k^t (k-1)^{(k-1)t/k}}{k^t(k-1)^{(k-1)t/k}} \leq t^2(k-1)^{t-2t/k}
 \end{align*}
 \subsection{Faster $\PBSbf$ Algorithm}
-%Faster Recursion
+Using the previous tool, we are now ready to present the derandomised version of Sch\"{o}ning's algorithm. At first, before doing anything else, the algorithm will firstly compute a code $\mathcal{C} \subseteq {1, ...,k}^t$, where each element $c \in \mathcal{C}$ has a radius of $\frac{t}{k}$, where $t$ is a some constant.\par
 
+Upon the input of some k-CNF, the algorithm greedily tries to find the maximal set of clauses that are independent of each other. Let's call this set $\mathcal{G} = \{\mathcal{C}_1, \mathcal{C}_2, ...,\mathcal{C}_m\}$. Now we can break the problem instance into 2 cases: \par
+
+Base case: The number of independent clauses is less than $t$. In which case we enumerate all possible assignments (of which there are $2^{km}$) and then call algorithm 3 with that assignment, with a radius of $r$. Essentially, this is just a search around all the possible assignments of distance at most $r$ away. Since we've set this to only happen when the number of clauses is below a certain constant, we have the number of possible assignments, $2^{km}$ of them is actually also just a constant. And since each search is bounded by $\O(k^r)$ time, we have that the base case runs in the same amount of time, since the search is only called a constant number of times.\par
+
+On the other hand, if the number of independent clauses is more than $t$. Then the algorithm should select a set $H \subseteq G$ such that $H$ is of size exactly $t$. Then, we will use the previously constructed k-ary covering code to decide how to choose assignments for this set of clauses $H$.\par
+
+To do this, let $w \in \{1, ..., k\}^t$, so $w = (w_1, w_2, ..., w_t)$ where each $w_i$ would be within the range of $1$ to $k$. We will assign the $w_i^{th}$ literal in the $i^{th}$ clause in $H$ to be satisfied. We shall denote this change in assignment to be $\alpha[w]$ from some initial assignment $\alpha$. Note that we need to fix some arbitrary ordering on the clauses. \par
+
+What the algorithm would do, is recursively try to solve the resulting formula obtained after trying all the $w \in \mathcal{C}$. 
+
+We also need to set a limit of the radius of how far we are to deviate from our original assignment. This bound is necessary for the running time of the algorithm.\par
+
+Notice that the covering code $\mathcal{C}$ that was computed so that each $w \in \mathcal{C}$ has a radius of $\frac{t}{k}$. What this means is that assuming some satisfying assignment $\alpha^*$ exists, letting $\alpha$ be some assignment that leaves some $t$ clauses unsatisfied and $w^*$ be some coordinate that corresponds to the satisfying assignment $\alpha$, there exists an element of the covering code $w' \in \mathcal{C}$ that is at most $\frac{t}{k}$ away from it. Thus $
+alpha[w']$ should in the worst case increase the distance by at most $\frac{t}{k}$ whereas decrease the distance by at least $t - \frac{t}{k}$. Thus, we have that at each change in our assignment for the formula: \par
+
+\begin{center}
+	$d_H(\alpha[w'], \alpha^{*}) \leq d_H(\alpha, \alpha^{*}) + \frac{t}{k} - (t - \frac{t}{k}) \leq r - (t - \frac{2t}{k})$
+\end{center}
+
+Essentially this implies every time we apply $w$ onto $\alpha$, the satisfying assignment should be that much closer.\par
+
+\begin{algorithm}[H]
+	\caption{ Faster-$\PBSbf$ Algorithm}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{A $\CNF$ formula $F$ with $n$ variables, assignment $\alpha$, radius $r$, $\mathcal{C} \subseteq \{1,...,k\}^t$}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+	\BlankLine
+	\lIf{$\astar$ satisfies $F$}{return $\astar$}
+	\lElseIf{$r = 0$} {return $false$}
+	\BlankLine
+	Find $G$ greedily as the maximal set of pairwise disjoint k-clauses from $F$ unsatisfied by $\alpha$\\
+	\If{$|G| < t$}{ 
+		\ForEach{possible assignment $\beta$ to the variables in $G$}{
+			\lIf{Recursion($F^{[\beta]}$, $\alpha$, $r$) = true}{return true}
+		}
+	}		
+	\Else {Let $H \subseteq G$ such that $|H| = t$
+	\ForEach{$w \in \mathcal{C}$} 
+	{
+		\lIf{Faster-$\PBSbf$(F, $\alpha[H, w]$, $r - (t - \frac{2t}{k})$) = true} {return true}
+	}
+	}
+	\end{algorithm}
+
+\subsubsection{Running time analysis}
 
 \begin{thebibliography}{9}
 	
