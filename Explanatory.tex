@@ -244,6 +244,21 @@ Notice that the performance is worse than the randomized algorithm and we will s
 	\end{align*}
 	By taking a union bound over all $k^t$ members from $\kbits^t$, the probability that $\cc^k_r$ is a covering code $> 1 - k^t\cdot k^{-t} > 0$. Hence, such a covering code exists. 
 \end{proof}
+We then try to approximate the size of the $k$-nary covering code with the following bound:
+\begin{lemma}[\cite{MacWilliams77}]
+	For $0<\rho \le 1/2$ and $t \in \mathbb{N}$, it holds that
+	\begin{align*}
+	{t \choose \rho t}\geq \frac{1}{\sqrt{8t\rho(1-\rho)}}\Big(\frac{1}{\rho}\Big)^{\rho t}\Big(\frac{1}{1-\rho}\Big)^{(1-\rho) t}
+	\end{align*} 
+	Choose $\rho = \frac{1}{k}$, we have
+	\begin{align*}
+	{t \choose t/k}\geq \frac{1}{\sqrt{8t}}(k)^{t/k}\Big(\frac{k}{k-1}\Big)^{(k-1) t/k} = \frac{k^t}{\sqrt{8t}(k-1)^{(k-1)t/k}}
+	\end{align*} 
+\end{lemma}
+	Combining \textbf{Lemma 9} and \textbf{Lemma 10}, by choosing $r = \rho t = \frac{t}{k}$, for sufficiently large $t$, we can approximate $|\cc^k_{t/k}|$ by
+\begin{align*}
+|\cc^k_{{t/k}}| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose t/k}(k-1)^{t/k}} \right \rceil \leq \frac{t^2 k^t (k-1)^{(k-1)t/k}}{k^t(k-1)^{(k-1)t/k}} \leq t^2(k-1)^{t-2t/k}
+\end{align*}
 \subsection{Faster $\PBSbf$ Algorithm}
 %Faster Recursion
 
@@ -262,6 +277,12 @@ E. Dantsin, A. Goerdt, E. A. Hirsch, R. Kannan, J. Kleinberg, C. Papadimitriou, 
 D.S. Hochbaum (Ed.).
 \textit{Approximation Algorithms for NP-hard Problems.}
 PWS Publishing Company, MA, (1997).
+
+\bibitem{MacWilliams77}
+F. J. MacWilliams and N. J. A. Sloane.
+\textit{The theory of error-correcting codes. II.}
+North-Holland Publishing Co., Amsterdam. North-Holland Mathematical Library, Vol. 16, (1977).
+
 \bibitem{Moser11}
 R. Moser and D. Scheder.
 \textit{A Full Derandomization of Sch\"{o}ning’s k-SAT Algorithm.} Proceedings of the 44th Annual ACM Symposium on Theory of Computing, (2011).
