@@ -1,0 +1,187 @@
+\documentclass[pdf] {beamer}
+\mode<presentation>{}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\usetheme{Copenhagen}
+
+\newcommand{\SAT}{\textnormal{$k$-SAT}}
+\newcommand{\SATbf}{\textbf{$k$-SAT}}
+\newcommand{\CNF}{\textnormal{$k$-CNF}}
+\newcommand{\vbl}[1]{\textnormal{vbl(#1)}}
+\newcommand{\dist}[2]{d_H(#1,#2)}
+\newcommand{\ball}[2]{B_{#1}(#2)}
+\newcommand{\ballk}[2]{B^k_{#1}(#2)}
+\newcommand{\astar}{\alpha^*}
+\newcommand{\PBS}{\textnormal{Promise-Ball-$\SAT$}}
+\newcommand{\PBSbf}{\textbf{Promise-Ball-$\SATbf$}}
+\newcommand{\cc}{\mathcal{C}}
+\newcommand{\bits}{\{0,1\}}
+\newcommand{\kbits}{\{1,...,k\}}
+\newcommand{\poly}{\textnormal{poly}}
+\renewcommand{\Pr}{\textnormal{Pr}}
+\renewcommand{\O}{\mathcal{O}^*}
+
+
+
+%% preamble
+\title{Derandomization of Schoning's Algorithm}
+\subtitle{CS5330 Presentation}
+\author{Li Zeyong, Eldon Chung}
+\begin{document}
+
+%% title frame 
+\begin{frame}
+	\titlepage
+	
+\end{frame}
+
+\begin{frame}{Outline}
+	\tableofcontents
+\end{frame}
+
+\section{Introduction and Motivation to k-SAT}
+	\begin{frame}{Introduction}
+		
+	\end{frame}
+	\begin{frame}{Motivation}
+	
+	\end{frame}
+	\begin{frame}{Problem statement}
+	
+	\end{frame}
+
+\section{Sch\"{o}ning's randomized algorithm}
+	\begin{frame}{Introduction}
+		
+	\end{frame}
+	\begin{frame}{Algorithm description}
+		\begin{algorithm}[H]
+			\caption{$\PBS$-Random-Walk}
+			\DontPrintSemicolon
+			\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+			\Input{$(F,\alpha,r)$}
+			\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+			\BlankLine
+			\For{steps = 1 to 3n}{
+				\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+				Choose an arbitrary clause $C$ not satified by $\alpha$\\
+				Choose a literal in $C$ uniformly at random and flip its value in $\alpha$
+			}
+			\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+			\hspace{7em}\lElse{return NO}
+			\end{algorithm}
+	\end{frame}
+	\begin{frame}{Analysis}
+		Just like in the case of 2-SAT, we would like to model the process as a random walk, where a state denotes the Hamming distance of the current assignment $\alpha$ from the actual satisfying assignment $\alpha^*$. \\~\
+		
+		At every step, the algorithm goes closer to $\alpha^*$ with probability of at least $\frac{1}{k}$, and with probability at most $1 - \frac{1}{k}$ it moves further away. \\~\
+		
+		Why? if there was a satisfying assignment, surely at least one of the literals has to be satisfied! And since there are $k$ literals, with probability at least $\frac{1}{k}$ we choose it. \\~\
+	\end{frame}
+	\begin{frame}{Analysis}
+		\begin{theorem}
+			(Proof Omitted) For an assignment $\alpha$ within some Hamming Distance $d$ away from a satisfying assignment $\alpha^*$, the algorithm finds $\alpha^*$ with probability $\geq (\frac{1}{k-1})^d$.
+		\end{theorem}
+		This actually follows from a detailed analysis of the previously mentioned random walk. 
+	\end{frame}
+	
+\section{Basic Derandomization with Local Search}
+	\begin{frame}{Derandomizing the algorithm}
+		\begin{enumerate}
+		\item The choice of an initial assignment $\alpha$
+		\item The random walk around the initial assignment.
+		\end{enumerate}
+	\end{frame}
+	\begin{frame}{Idea}
+		We can view the randomized algorithm as searching for the satisfying assignment within a certain radius.
+		\begin{definition}[Hamming Ball]
+			$B_r(\alpha)$ is called a Hamming Ball, which is the set of all assignments which have a Hamming Distance of at most $r$ from $\alpha$.\\
+		\end{definition}
+	\end{frame}		
+	\begin{frame}
+		We can traverse the Hamming Ball through a recursive method as follows:
+		\begin{algorithm}[H]
+			\caption{$\PBS$-Recursion}
+			\DontPrintSemicolon
+			\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+			\Input{$(F,\alpha,r)$}
+			\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+			\BlankLine
+			\lIf{$\alpha$ satisfies $F$}{return $\alpha$}
+			\hspace{7em}\lElseIf{r = 0}{return NO}
+			Choose an arbitrary clause $C$ not satified by $\alpha$\\
+			\ForEach{literal $l \in C$}{
+				$\alpha'$ = $\PBS$-Recursion($F^{[l = 1]}, \alpha^{[l=1]},r-1)$\\
+				\lIf {$\alpha'$ satisfies $F$}{Return $\alpha'$}
+			}
+			{return NO}
+		\end{algorithm}		
+	\end{frame}
+	\begin{frame}
+\begin{lemma}
+			$\PBS \textnormal{-Recursion}$ solves $\PBS$ in $\O(k^r)$ time.
+		\end{lemma}
+		\begin{proof}
+			The running time is straightforward. Each clause has at most $k$ literals and hence each node in the recursion tree has at most $k$ branches. The depth of the recursion three is at most $r$. Hence, there are at most $k^r$ leaves in the recursion tree. The overall runtime is $\O(k^r)$. \par 
+		\end{proof}
+	\end{frame}
+	\subsection{Covering Codes}
+	\begin{frame}
+		Idea: since we have a space of possible assignments, and our search is a set of assignments of some Hamming distance away, we can just try to cover the entire space with a few of these balls. \par
+		\begin{definition}[Covering Code]
+		A (binary) Covering Code of length $n$ and radius $r$, $\cc_r \subseteq \bits^n$ is defined as: $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
+\end{definition}
+	\end{frame}
+	\begin{frame}{Analysis of the covering codes}
+	
+	\end{frame}
+	\subsection{Derandomized Algorithm}
+	\begin{frame}{Combining the two derandomizations}
+	\begin{algorithm}[H]
+	\caption{Deterministic $\SAT$}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{A $\CNF$ formula $F$ with $n$ variables}
+	\Output{A satisfying assignment $\astar$ or NO if no $\astar$ are found}
+	\BlankLine
+	Initialization: Compute covering code $\cc_{\rho n}$\\
+	\ForEach{code $c \in \cc_{\rho n}$}{
+		$\astar$ = $\PBS$-Recursion($F,c,\rho n$)\\
+		\lIf{$\astar$ satisfies $F$}{return $\astar$}
+	}
+	{return NO}
+\end{algorithm}
+	\end{frame}
+
+
+\section{Improving on the Derandomization}
+	\begin{frame}{Intuition}
+	The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls while attempting the reduce the number of literals in the clauses. \\~\
+	Another key observation is that whenever we fix an assignment for a variable, all clauses containing the variable would have one less literal to be considered. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. \\~\
+	But first we need to modify our Covering Codes to do a little more.
+	\end{frame}		
+	\subsection{Extended Covering Codes}
+	\begin{frame}{Introduction}
+	We define a $k$-ary Covering Code to be analogous to the previous Covering Code but instead of from $\{0,1\}^n$, we define it to be from $\{1,...,k\}^t$ instead. \\~\
+	The notion of distance, however, remains the same. i.e. the number of coordinates in which the two points disagree on.\\~\
+	\end{frame}
+	\begin{frame}{Analysis}
+	
+	\end{frame}
+	\subsection{Improved Derandomized Algorithm}
+	\begin{frame}
+	Before doing anything else, first compute a $k$-ary covering code $\mathcal{C}$ of radius $\frac{t}{k}$, where $t$ is some constant. \\~\
+	
+	Upon the input of some $\CNF$ and a assignment $\alpha$, the algorithm greedily tries to find the maximal set of unsatisfied clauses that are independent of each other. Let's call this set $G = \{C_1, C_2, ...,C_m\}$. In other words, we want that any two clauses do not share any variables, and by maximal we mean all other unsatisfied clauses (outside of $G$) share at least one literal with some $C_i$. Now we can break the problem instance into 2 cases: \\~\
+	\end{frame}
+	\begin{frame}
+		\begin{enumerate}
+			\item[1] When the number of independent unsatisfied clauses is less than or equals to $t$: Just enumerate all possible assignments for these clauses.
+			\item[2] Else: Greedily find the set $G$ as mentioned. Then choose a set $H \subseteq G$ such that $H$ is of size $t$. Then satisfy these clauses to obtain a smaller formula and recurse on it. 
+		\end{enumerate}
+	\end{frame}		
+\end{document}

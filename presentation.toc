@@ -1,0 +1,8 @@
+\beamer@sectionintoc {1}{Introduction and Motivation to k-SAT}{3}{0}{1}
+\beamer@sectionintoc {2}{Sch\"{o}ning's randomized algorithm}{6}{0}{2}
+\beamer@sectionintoc {3}{Basic Derandomization with Local Search}{10}{0}{3}
+\beamer@subsectionintoc {3}{1}{Covering Codes}{14}{0}{3}
+\beamer@subsectionintoc {3}{2}{Derandomized Algorithm}{16}{0}{3}
+\beamer@sectionintoc {4}{Improving on the Derandomization}{17}{0}{4}
+\beamer@subsectionintoc {4}{1}{Extended Covering Codes}{18}{0}{4}
+\beamer@subsectionintoc {4}{2}{Improved Derandomized Algorithm}{20}{0}{4}
