@@ -4,5 +4,5 @@
 \beamer@subsectionintoc {3}{1}{Covering Codes}{14}{0}{3}
 \beamer@subsectionintoc {3}{2}{Derandomized Algorithm}{16}{0}{3}
 \beamer@sectionintoc {4}{Improving on the Derandomization}{17}{0}{4}
-\beamer@subsectionintoc {4}{1}{Extended Covering Codes}{18}{0}{4}
-\beamer@subsectionintoc {4}{2}{Improved Derandomized Algorithm}{20}{0}{4}
+\beamer@subsectionintoc {4}{1}{Extended Covering Codes}{20}{0}{4}
+\beamer@subsectionintoc {4}{2}{Improved Derandomized Algorithm}{23}{0}{4}

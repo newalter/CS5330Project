@@ -45,7 +45,7 @@
 
 \section{Introduction and Motivation to k-SAT}
 	\begin{frame}{Introduction}
-		
+	
 	\end{frame}
 	\begin{frame}{Motivation}
 	
@@ -159,29 +159,87 @@
 
 
 \section{Improving on the Derandomization}
+	\begin{frame}{Aim}
+	Overall running time: $\O((2(1-\frac{1}{k+1}))^n)$\\
+	Notice that the parameter $k$ comes from the running time of $\PBS$-Recursion, which is $\O(k^r)$.\\
+	If we could improve it to $\O((k-1)^r)$, then we achieve the desired $\O((2(1-\frac{1}{k}))^n)$ performance.
+	\end{frame}
 	\begin{frame}{Intuition}
-	The same idea can be used when searching in a Hamming Ball. In particular, we try to cover a large Hamming Ball with smaller Hamming Balls while attempting the reduce the number of literals in the clauses. \\~\
-	Another key observation is that whenever we fix an assignment for a variable, all clauses containing the variable would have one less literal to be considered. By repeating this process recursively, we arrive at a more efficient algorithm for $\PBS$. \\~\
-	But first we need to modify our Covering Codes to do a little more.
-	\end{frame}		
+	Observation 1: Whenever we fix an assignment for a variable, all clauses containing the variable would have one less literal to be considered. e.g.
+	\begin{align*}
+	&(x_1 \lor x_2 \lor x_3) \land (\bar{x_1} \lor x_4 \lor x_5)\\
+	&\text{assigning }x_1 = 1\\
+	&(1 \lor x_2 \lor x_3) \land (0 \lor x_4 \lor x_5)\\
+	&(x_4 \lor x_5)
+	\end{align*}
+	\end{frame}	
+	\begin{frame}{Intuition}
+	Observation 2: We can cover a large Hamming Ball with smaller Hamming Balls. \\~\
+	To achieve observation 2, we need to modify our Covering Codes to do a little more.
+	\end{frame}	
 	\subsection{Extended Covering Codes}
 	\begin{frame}{Introduction}
-	We define a $k$-ary Covering Code to be analogous to the previous Covering Code but instead of from $\{0,1\}^n$, we define it to be from $\{1,...,k\}^t$ instead. \\~\
-	The notion of distance, however, remains the same. i.e. the number of coordinates in which the two points disagree on.\\~\
+	We define a $k$-ary Covering Code to be analogous to the previous Covering Code but instead of from $\{0,1\}^t$, we define it to be from $\{1,...,k\}^t$ instead. \\~\
+	Now each point has $t$ coordinates and each coordinate takes the value from $1$ to $k$. The notion of distance remains as the number of coordinates in which the two points disagree on.\\
+	$w_1 = \{1, 1, 1\}$ $w_2 = \{1, 3, 3\}$ \\
+	$\dist{w_1}{w_2} = 2$ as there are two different coordinates.
 	\end{frame}
-	\begin{frame}{Analysis}
-	
+	\begin{frame}{Size of the Covering Code}
+	Let $V^k(r)$ denote the volume of a k-ary Hamming Ball of radius $r$. \\
+	Number of points at whose distance is exactly $r$ from a particular point = $ {t \choose r}(k-1)^r$. Hence, $V^k(r) > {t \choose r}(k-1)^r$ \\
+	By using a similar probabilistic argument as before, there exists a k-ary covering code $\cc_r^k$ such that 
+	\begin{align*}
+	|\cc^k_r| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose r}(k-1)^r} \right \rceil
+	\end{align*}
+	\end{frame}
+	\begin{frame}{Size of the Covering Code}
+	Lastly, by choosing $r = \frac{t}{k}$, and going through some algebra, we have the following bound:
+	\begin{align*}
+	|\cc^k_{{t/k}}| \leq \left \lceil \frac{t\ln(k)k^t}{{t \choose t/k}(k-1)^{t/k}} \right \rceil \leq \frac{t^2 k^t (k-1)^{(k-1)t/k}}{k^t(k-1)^{t/k}} \leq t^2(k-1)^{t-2t/k}
+	\end{align*}
 	\end{frame}
 	\subsection{Improved Derandomized Algorithm}
-	\begin{frame}
-	Before doing anything else, first compute a $k$-ary covering code $\mathcal{C}$ of radius $\frac{t}{k}$, where $t$ is some constant. \\~\
+	\begin{frame}{Algorithm}
+	Before doing anything else, first compute a $k$-ary covering code $\cc_r^k$ of radius $\frac{t}{k}$, where $t$ is some constant. \\~\
 	
-	Upon the input of some $\CNF$ and a assignment $\alpha$, the algorithm greedily tries to find the maximal set of unsatisfied clauses that are independent of each other. Let's call this set $G = \{C_1, C_2, ...,C_m\}$. In other words, we want that any two clauses do not share any variables, and by maximal we mean all other unsatisfied clauses (outside of $G$) share at least one literal with some $C_i$. Now we can break the problem instance into 2 cases: \\~\
+	Upon the input of some $\CNF$ and a assignment $\alpha$, the algorithm greedily find the maximal independent set of unsatisfied clauses $G = \{C_1, C_2, ...,C_m\}$. \\
+	\begin{enumerate}
+		\item[1] Independent: any two clauses do not share any variables\\
+		\item[2] Maximal: all other unsatisfied clauses (outside of $G$) share at least one variable with some $C_i$.
+	\end{enumerate}
+	Now we can break the problem instance into 2 cases: \\~\
 	\end{frame}
 	\begin{frame}
 		\begin{enumerate}
-			\item[1] When the number of independent unsatisfied clauses is less than or equals to $t$: Just enumerate all possible assignments for these clauses.
-			\item[2] Else: Greedily find the set $G$ as mentioned. Then choose a set $H \subseteq G$ such that $H$ is of size $t$. Then satisfy these clauses to obtain a smaller formula and recurse on it. 
+			\item[1] $|G| \leq t$ : Enumerate all possible assignments for $G$ and run $\PBS$-Recursion on the new formula. \\~\
+			Notice that all other unsatisfied clauses share at least one variable with $G$ which is now assigned a value. \\~\
+			From observation 1, all unsatisfied clauses now have at most $k-1$ literals and the running time is $\O((k-1)^r)$.
 		\end{enumerate}
-	\end{frame}		
+	\end{frame}	
+	\begin{frame}
+		\begin{enumerate}
+			\item[2] $|G| > t$: Arbitrarily choose a set $H \subseteq G$ such that $H$ is of size $t$. Now apply the k-ary covering code in the following manner: for each point $w \in \cc_r^k$, for the $i$th clause in $H$, let $p$ be the $i$th coordinate of $w$ and flip the value of the $p$th literal in the $i$th clause. Then recurse with $r' = r - (t - 2t/k)$\\~\
+			
+			For example, given $H = \{(x_1 \lor x_2 \lor x_3), (x_4 \lor x_5 \lor x_6)\}$ where all variables have value $0$ and $c = (2,3)$. Then we will have a new assignment by changing $x_2 = 1$ and $x_6 = 1$.
+		\end{enumerate}
+	\end{frame}	
+	\begin{frame}
+		What are we doing here?\\~\
+		
+		Let $\alpha[w]$ denote the assignment after flipping $t$ literals according to $w$. \\
+		Suppose $w^*$ denotes the difference between assignment $\alpha$ and a satisfying assignment $\astar$ for the $t$ clauses in $H$. That is, we make $t$ correct moves towards $\astar$, $\dist{\alpha[w^*]}{\astar} \leq r - t$. \\
+		We know $\exists w \in \cc_r^k$ such that $\dist{w}{w^*} \leq t/k$. Hence, the assignment $\alpha[w]$ makes at least $t - t/k$ correct moves and at most $t/k$ wrong moves.\\
+		 We have $\dist{\alpha[w]}{\astar} \leq r - (t - t/k) + t/k \leq r - (t-2t/k)$
+	\end{frame}
+	\begin{frame}
+		Lastly, let us look at the running time. Let $\delta = t - 2t/k$. The recursion tree has $|\cc_r^k|$ branches and $r$ decreases by $\delta$ in each step. Hence, the height is ${r/\delta}$. The number of leaves is at most
+		\begin{align*}
+		|\mathcal{C}_r^k|^{r/\delta} &\leq (t^{2}(k-1)^{\delta})^{r/\delta}\\
+		&= ((k-1)t^{2/\delta})^{r}
+		\end{align*}
+		Note that $t$ is independent of the input size and the running time is thus $\O((k-1)^r)$.
+	\end{frame}
+	\begin{frame}
+	Questions?
+\end{frame}
 \end{document}
