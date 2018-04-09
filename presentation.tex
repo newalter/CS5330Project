@@ -5,7 +5,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
-
+\usepackage{tikz}
 \usetheme{Copenhagen}
 
 \newcommand{\SAT}{\textnormal{$k$-SAT}}
@@ -44,23 +44,51 @@
 \end{frame}
 
 \section{Introduction and Motivation to k-SAT}
-	\begin{frame}{Introduction}
-	
+	\begin{frame}
+		\begin{definition}[k-Satisfiability]
+			A set of clauses $C_1, C_2, ..., C_m$ in conjunctive normal form, where 			each clause $C_i$ contains exactly $k$ literals in disjunctive normal form. Each literal can be set to either true or false. The goal is to try to find an assignment that allows all clauses to be satisfied. Given that there are $n$ variables to assign.		
+		\end{definition}
+		\begin{definition}
+			Just like 3-SAT, but with $k$ variables in each clause instead of 3!
+		\end{definition}
+	\end{frame}
+	\begin{frame}{Before we begin}
+		Here's the takeaway:
+		\begin{enumerate}
+			\item There is a randomised algorithm that solves $k$-SAT in time $\frac{k}{2(k-1)}^n$ w.h.p.
+			\item There is a de-randomized algorithm that does the same thing.
+		\end{enumerate}
 	\end{frame}
 	\begin{frame}{Motivation}
-	
+		\begin{itemize}[FAQ]
+			\item<1-> Why are we trying to solve some convoluted construct?
+			\item<2-> It's not even in poly time! Can I have my money back? 
+		\end{itemize}
 	\end{frame}
-	\begin{frame}{Problem statement}
-	
+	\begin{frame}
+		So here's a graph of the running time as $k$ increases.
+		\includegraphics[scale=0.35]{graph.png}
+		Even small improvements like these are celebrated results!
 	\end{frame}
-
+	\begin{frame}{Motivation}
+		\begin{itemize}[FAQ]
+			\item<1-> Why are we trying to solve some problem like $k$-SAT?
+			\item<1-> It's not even in poly time! Can I have my money back?
+			\item<2-> You mentioned "derandomization". What is it and why are we 
+						covering it?
+		\end{itemize}
+	\end{frame}
 \section{Sch\"{o}ning's randomized algorithm}
-	\begin{frame}{Introduction}
-		
+	\begin{frame}{Intuition}
+		\begin{block}{Intuition}
+			If some instance of a $k$-SAT problem has some satisfying assignment $\alpha^*$, then given some assignment $\alpha$, there is some Hamming distance between $\alpha^*$ and $\alpha$ which counts the number of literals they disagree on. 
+		\end{block}
+		We will denote this as $H_D(\alpha^*, \alpha)$.
+		Idea: We can turn this into a random walk! Where each state of the Markov chain is the Hamming Distance from a given assignment $\alpha$ to the satisfying one $\alpha*$. 	
 	\end{frame}
 	\begin{frame}{Algorithm description}
 		\begin{algorithm}[H]
-			\caption{$\PBS$-Random-Walk}
+			\caption{$k$-SAT-Random-Walk}
 			\DontPrintSemicolon
 			\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 			\Input{$(F,\alpha,r)$}
@@ -87,8 +115,23 @@
 			(Proof Omitted) For an assignment $\alpha$ within some Hamming Distance $d$ away from a satisfying assignment $\alpha^*$, the algorithm finds $\alpha^*$ with probability $\geq (\frac{1}{k-1})^d$.
 		\end{theorem}
 		This actually follows from a detailed analysis of the previously mentioned random walk. 
+		%% Maybe add more later on if possible.
 	\end{frame}
-	
+	\begin{frame}{Analysis}
+		Thus, the probability that the algorithm finds the assignment is:\\
+		\begin{center}						
+		\[
+			\frac{1}{2}^n \cdot \mathlarger{‎‎\sum}_{j=0}^{n}\binom{n}{j}\frac{1}{k-1}^j = (\frac{1}{2}(1+\frac{1}{k-1}))^n
+			= (\frac{k}{2(k-1)})^n		
+		\]		
+		\end{center}
+		amplifying this, the runtime of the algo should be:\\
+		\begin{center}						
+		\[
+			O*((2(1-\frac{1}{k}))^n)
+		\]		
+		\end{center}
+	\end{frame}
 \section{Basic Derandomization with Local Search}
 	\begin{frame}{Derandomizing the algorithm}
 		\begin{enumerate}
@@ -101,9 +144,23 @@
 		\begin{definition}[Hamming Ball]
 			$B_r(\alpha)$ is called a Hamming Ball, which is the set of all assignments which have a Hamming Distance of at most $r$ from $\alpha$.\\
 		\end{definition}
-	\end{frame}		
-	\begin{frame}
-		We can traverse the Hamming Ball through a recursive method as follows:
+		\begin{definition}[Covering Code]
+			A covering code of radius $r$ is a set of coordinates, which serve as the center for a Hamming Ball respectively, such that every coordinate in the space of every possible assignment is inside at least one Hamming Ball.\\
+			Or if you prefer, every possible assignment is within $r$ Hamming distance of some element in the covering code.
+		\end{definition}
+	\end{frame}	
+	\begin{frame}{Hamming Ball Properties}
+	A Hamming Ball with a radius $r$ has a size of $\Sigma_{i=0}^{r}\binom{n}{i}$. 
+	\end{frame}
+	\begin{frame}{Hamming Ball Properties}
+	For any $n \geq 1$ and $r$, there exits a covering code of size at most: 
+	\begin{align*}
+				\frac{n \cdot 2^n}{\Sigma_{i=0}^{r}\binom{n}{i}}
+	\end{align*}
+	We shall use a probabilistic argument:
+	% Do the proof on a whiteboard.	
+	\end{frame}
+	\begin{frame}{Searching assignments from within distance $k$}
 		\begin{algorithm}[H]
 			\caption{$\PBS$-Recursion}
 			\DontPrintSemicolon
@@ -115,30 +172,25 @@
 			\hspace{7em}\lElseIf{r = 0}{return NO}
 			Choose an arbitrary clause $C$ not satified by $\alpha$\\
 			\ForEach{literal $l \in C$}{
-				$\alpha'$ = $\PBS$-Recursion($F^{[l = 1]}, \alpha^{[l=1]},r-1)$\\
-				\lIf {$\alpha'$ satisfies $F$}{Return $\alpha'$}
+			$\alpha'$ = $\PBS$-Recursion($F^{[l = 1]}, \alpha^{[l=1]},r-1)$\\
+			\lIf {$\alpha'$ satisfies $F$}{Return $\alpha'$}
 			}
 			{return NO}
-		\end{algorithm}		
+		\end{algorithm}
 	\end{frame}
-	\begin{frame}
-\begin{lemma}
+	\begin{frame}{Running time?}
+		\begin{lemma}
 			$\PBS \textnormal{-Recursion}$ solves $\PBS$ in $\O(k^r)$ time.
 		\end{lemma}
 		\begin{proof}
 			The running time is straightforward. Each clause has at most $k$ literals and hence each node in the recursion tree has at most $k$ branches. The depth of the recursion three is at most $r$. Hence, there are at most $k^r$ leaves in the recursion tree. The overall runtime is $\O(k^r)$. \par 
 		\end{proof}
 	\end{frame}
-	\subsection{Covering Codes}
-	\begin{frame}
-		Idea: since we have a space of possible assignments, and our search is a set of assignments of some Hamming distance away, we can just try to cover the entire space with a few of these balls. \par
-		\begin{definition}[Covering Code]
-		A (binary) Covering Code of length $n$ and radius $r$, $\cc_r \subseteq \bits^n$ is defined as: $\forall \alpha \in \bits^n, \exists c \in \cc_r$ such that $\alpha \in \ball{r}{c}$. That is, the Hamming Balls of radius $r$ centered at each member of $\cc_r$ covers the set $\bits^n$.
-\end{definition}
+	\begin{frame}{Putting it together}
+		So now we derandomize the original algorithm. Recall that there were two things to derandomize. The initial choice of an assignment, and the random walk that starts from it. \\~\
+		Elements from the code shall serve as the initial assignment, and the previously stated algorithm serves as our not-so-random walk.
 	\end{frame}
-	\begin{frame}{Analysis of the covering codes}
-	
-	\end{frame}
+	%% Use the whiteboard to explain, stuff like F[l=1] and so on. 
 	\subsection{Derandomized Algorithm}
 	\begin{frame}{Combining the two derandomizations}
 	\begin{algorithm}[H]
@@ -156,8 +208,20 @@
 	{return NO}
 \end{algorithm}
 	\end{frame}
-
-
+	\begin{frame}{Running time?}
+		\begin{align*}
+T(n,\rho,d) &= \O(2^{3n/d}+ 2^{(1-h(\rho))n}) + \O(2^{(1-h(\rho))n})\cdot \O(k^{\rho n}) \\~\
+T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\~\
+&= \O\Big(2^{(1+ \frac{1}{k+1}\log_2\frac{1}{k+1} + \frac{k}{k+1}\log_2\frac{k}{k+1})n} \cdot 2^{(\frac{1}{k+1} \log_2 k )n}\Big)\\~\
+&= \O\Big(2^{(1 - \frac{1}{k+1}\log_2 (k+1) + \frac{k}{k+1}\log_2 k - \frac{k}{k+1}\log_2 (k+1) + \frac{1}{k+1} \log_2 k)n}\Big)\\~\
+&= \O\Big(2^{(1 - \log_2 (k+1) + \log_2 k)n}\Big)\\~\
+&= \O\big(\big(2 \cdot \frac{k}{k+1}\big)^{n}\big) = \O\big((2 - \frac{2}{k+1})^n\big)
+		\end{align*} 
+	\end{frame}
+	\begin{frame}{Hmm}
+		$O\big((2 - \frac{2}{k+1})^n\big)$ seems a little too large. Turns out we can still improve it!
+	\end{frame}
+%% Zeyong's section onwards.
 \section{Improving on the Derandomization}
 	\begin{frame}{Aim}
 	Overall running time: $\O((2(1-\frac{1}{k+1}))^n)$\\
