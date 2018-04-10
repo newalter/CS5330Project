@@ -91,8 +91,8 @@
 		\begin{block}{Intuition}
 			If some instance of a $k$-SAT problem has some satisfying assignment $\alpha^*$, then given some assignment $\alpha$, there is some Hamming distance between $\alpha^*$ and $\alpha$ which counts the number of literals they disagree on. 
 		\end{block}
-		We will denote this as $H_D(\alpha^*, \alpha)$.
-		Idea: We can turn this into a random walk! Where each state of the Markov chain is the Hamming Distance from a given assignment $\alpha$ to the satisfying one $\alpha*$. 	
+		We will denote this as $\dist{\alpha^*}{\alpha}$.
+		Idea: We can turn this into a random walk! Where each state of the Markov chain is the Hamming Distance from a given assignment $\alpha$ to the satisfying one $\alpha^*$. 	
 	\end{frame}
 	\begin{frame}{Algorithm description}
 		\begin{algorithm}[H]
@@ -136,7 +136,7 @@
 		amplifying this, the runtime of the algo should be:\\
 		\begin{center}						
 		\[
-			O*((2(1-\frac{1}{k}))^n)
+			\O((2(1-\frac{1}{k}))^n)
 		\]		
 		\end{center}
 	\end{frame}
@@ -227,7 +227,7 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\~\
 		\end{align*} 
 	\end{frame}
 	\begin{frame}{Hmm}
-		$O\big((2 - \frac{2}{k+1})^n\big)$ seems a little too large. Turns out we can still improve it!
+		$\O\big((2 - \frac{2}{k+1})^n\big)$ seems a little too large. Turns out we can still improve it!
 	\end{frame}
 %% Zeyong's section onwards.
 \section{Improving on the Derandomization}
