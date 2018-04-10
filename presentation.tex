@@ -55,7 +55,7 @@
 	\begin{frame}{Before we begin}
 		Here's the takeaway:
 		\begin{enumerate}
-			\item There is a randomised algorithm that solves $k$-SAT in time $\frac{k}{2(k-1)}^n$ w.h.p.
+			\item There is a randomised algorithm that solves $k$-SAT in expected time $\frac{k}{2(k-1)}^n$ w.h.p.
 			\item There is a de-randomized algorithm that does the same thing.
 		\end{enumerate}
 	\end{frame}
@@ -66,15 +66,23 @@
 		\end{itemize}
 	\end{frame}
 	\begin{frame}
-		So here's a graph of the running time as $k$ increases.
+		So here's a graph of the base of the running time as $k$ increases.
 		\includegraphics[scale=0.35]{graph.png}
-		Even small improvements like these are celebrated results!
+		Even small improvements like these are celebrated results! \\~\ (i.e. Your money is being well spent)
 	\end{frame}
 	\begin{frame}{Motivation}
 		\begin{itemize}[FAQ]
 			\item<1-> Why are we trying to solve some problem like $k$-SAT?
 			\item<1-> It's not even in poly time! Can I have my money back?
-			\item<2-> You mentioned "derandomization". What is it and why are we 
+			\item<2-> Is there going to be a lot of talk about randomised algo?
+		\end{itemize}
+	\end{frame}
+	\begin{frame}{Motivation}
+		\begin{itemize}[FAQ]
+			\item<1-> Why are we trying to solve some problem like $k$-SAT?
+			\item<1-> It's not even in expected poly time! Can I have my money back?
+			\item<1-> Is there going to be a lot of talk about randomised algo? Yes! 4 full pages. What a deal!
+			\item<2-> "Derandomization". What is it and why are we 
 						covering it?
 		\end{itemize}
 	\end{frame}

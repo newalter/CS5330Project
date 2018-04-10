@@ -1,7 +1,7 @@
 \BOOKMARK [2][]{Outline0.1}{Introduction and Motivation to k-SAT}{}% 1
 \BOOKMARK [2][]{Outline0.2}{Sch\366ning's randomized algorithm}{}% 2
 \BOOKMARK [2][]{Outline0.3}{Basic Derandomization with Local Search}{}% 3
-\BOOKMARK [3][]{Outline0.3.1.22}{Derandomized Algorithm}{Outline0.3}% 4
+\BOOKMARK [3][]{Outline0.3.1.24}{Derandomized Algorithm}{Outline0.3}% 4
 \BOOKMARK [2][]{Outline0.4}{Improving on the Derandomization}{}% 5
-\BOOKMARK [3][]{Outline0.4.1.28}{Extended Covering Codes}{Outline0.4}% 6
-\BOOKMARK [3][]{Outline0.4.2.31}{Improved Derandomized Algorithm}{Outline0.4}% 7
+\BOOKMARK [3][]{Outline0.4.1.30}{Extended Covering Codes}{Outline0.4}% 6
+\BOOKMARK [3][]{Outline0.4.2.33}{Improved Derandomized Algorithm}{Outline0.4}% 7
