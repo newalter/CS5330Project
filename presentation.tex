@@ -306,7 +306,7 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\~\
 		\begin{enumerate}
 			\item[1] $|G| \leq t$ : Enumerate all possible assignments for $G$ and run $\PBS$-Recursion on the new formula. \\~\
 			Notice that all other unsatisfied clauses share at least one variable with $G$ which is now assigned a value. \\~\
-			From observation 1, all unsatisfied clauses now have at most $k-1$ literals and the running time is $\O((k-1)^r)$.
+			From observation 1, all unsatisfied clauses now have at most $k-1$ literals and the running time is $\O\big((k-1)^r\big)$.
 		\end{enumerate}
 	\end{frame}	
 	\begin{frame}
