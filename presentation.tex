@@ -252,8 +252,13 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\~\
 	\begin{frame}{Intuition}
 	Observation 2: By flipping one variable at a time(or moving one step in the Markov chain), we are covering a Hamming Ball of radius $r$ with k Hamming Balls of radius $(r-1)$. \\~\
 	What if we are more ambitious and change $t$ variables at a time? Can we do better by covering the BIG Hamming Ball with much smaller Hamming Balls? \\~\
-	But how do we choose the $t$ variables? We need to modify our Covering Codes to help us.
 	\end{frame}	
+	\begin{frame}{Intuition}
+		Observation 2 continues:\\~\
+		But how do we choose the $t$ variables? We can't afford to try all $k^t$ possible choices. If we try less possibilities, we can't guarantee that the best move is taken.\\~\ Instead, we want a guarantee that there exists a move that is sufficiently close to the best move so that this move is also close to $\astar$.\\~\ 
+		
+	We need to modify our Covering Codes to help us.
+\end{frame}
 	\subsection{Extended Covering Codes}
 	\begin{frame}{Introduction}
 	We define a $k$-ary Covering Code to be analogous to the previous Covering Code but instead of from $\{0,1\}^t$, we define it to be from $\{1,...,k\}^t$ instead. \\~\
@@ -317,17 +322,18 @@ T(n,\rho,d) &=\O(2^{(1-h(\rho))n} \cdot k^{\rho n})\\~\
 	\begin{frame}
 		Lastly, let us look at the running time. Let $\delta = t - 2t/k$. The recursion tree has $|\cc_r^k|$ branches and $r$ decreases by $\delta$ in each step. Hence, the height is ${r/\delta}$. The number of leaves is at most
 		\begin{align*}
-		|\mathcal{C}_r^k|^{r/\delta} &\leq (t^{2}(k-1)^{\delta})^{r/\delta}\\
+		|\mathcal{C}_r^k|^{r/\delta} &\leq \big(t^{2}(k-1)^{\delta}\big)^{r/\delta}\\
 		&= \big((k-1)t^{2/\delta}\big)^{r}
 		\end{align*}
 		Note that $t$ is independent of the input size and the running time is thus $\O\big((k-1)^r\big)$.
 	\end{frame}
 
 \subsection{Take Away}
-\begin{frame}
-	3 key ideas:
+\begin{frame}{Take Away}
 	\begin{enumerate}
-		\item[1] Randomization can give intuition for deterministic search
+		\item[1] Randomized Algorithm can give intuition for deterministic search
+		\item[2] BUT in practice, derandomized algorithms are generally harder to implement and has a larger hidden constant factor. 
+		\item[3] Use the RANDOMIZED algorithm.
 	\end{enumerate}
 \end{frame}
 	\begin{frame}

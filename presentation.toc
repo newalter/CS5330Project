@@ -3,6 +3,6 @@
 \beamer@sectionintoc {3}{Basic Derandomization with Local Search}{17}{0}{3}
 \beamer@subsectionintoc {3}{1}{Derandomized Algorithm}{24}{0}{3}
 \beamer@sectionintoc {4}{Improving on the Derandomization}{27}{0}{4}
-\beamer@subsectionintoc {4}{1}{Extended Covering Codes}{30}{0}{4}
-\beamer@subsectionintoc {4}{2}{Improved Derandomized Algorithm}{35}{0}{4}
-\beamer@subsectionintoc {4}{3}{Take Away}{39}{0}{4}
+\beamer@subsectionintoc {4}{1}{Extended Covering Codes}{31}{0}{4}
+\beamer@subsectionintoc {4}{2}{Improved Derandomized Algorithm}{36}{0}{4}
+\beamer@subsectionintoc {4}{3}{Take Away}{40}{0}{4}
