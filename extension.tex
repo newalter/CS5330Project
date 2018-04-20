@@ -2,6 +2,8 @@
 
 
 \usepackage{enumitem}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
 \title{Applying Sch\"{o}ning's Algorithm on the k-Dominating Set problem}
 \author{Li Zeyong, Eldon Chung}
 \date{20-Apr-2018}
@@ -11,15 +13,45 @@
 \maketitle
 
 \section{Introduction}
-
-\section{Naive Reduction to k-SAT}
-
+	Sch\"{o}ning's algorithm is a randomized algorithm used to solve k-SAT in time $\mathcal{O}^*(\frac{k}{2(k-1)})$, by performing a somewhat randomized search around a randomly chosen initial assignment by means of satisfying clauses. The key concept is that hopefully by doing this we are able to approach the actual witness to the problem instance with some probability. In this paper extension we attempt to apply the same technique and analysis to the NP-Hard problem known as k-Dominating Set, and as a result obtain an even faster solution \par 
+	
+\section{Problem Definition}
+	Given some set $G = (V, E)$, where $V$ is the set of vertices and $E$ the set of $E$, a set $D \subseteq G$ is a dominating set when $\forall v \in V$, we have that either $v$ is in $D$ or it is adjacent to some vertex in $D$. A $k$-Dominating set is when the dominating set is of size at most $k$. The $k$-dominating set problem is a decision problem defined as follows: "Given a graph $G$ and an integer $k$, does there exist a dominating set $D$ of size $k$?\par
+	
+\section{Naive Reduction to k-SAT}	
+	
 \section{Applying the Random Walk Directly}
-
+	\begin{algorithm}[H]
+	\caption{Dominating set-Random-Walk}
+	\DontPrintSemicolon
+	\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+	\Input{$(G)$}
+	\Output{A dominating set $D$ or NO if no such set is found}
+	\BlankLine
+	Randomly select a $k$ sized vertex subset as $D$.\\
+	\For{steps = 1 to 3n}{
+		\lIf{$|D| < k$ and a valid }{return $D$}
+		Randomly select a vertex $u$ in the current set $D$.\\
+		Randomly select a neighbour of $u$, say $v$, and swap them, so that $v$ is now in the set, and $u$ isn't\\
+	}
+	\lIf{$|D| < k$ and a valid }{return $D$}
+	\hspace{7em}\lElse{return NO}
+\end{algorithm}
+	
+\section{Definition of Distance}
+	Similar to Sch\"{o}ning's algorithm, we need a notion of distance. We let $D^*$ be some set of vertices that is actually the minimum dominating set, and let $D$ be some set of of vertices, both of size $k$. Then we define the distance $r$ between the two to simply be $k - |D \cap D^*|$, or in some sense the number of vertices in which they disagree.\par
 \section{Running Time Analysis}
 
-\section{Conclusion}
-
+\section{Discussion and Future Works}
+	\section{Discussion}
+	During our analysis of the running time, it appeared that the degree $d$ did not affect the bound on the running time. Whereas as shown, the value of $k$ relative to $n$ played a huge role.\par
+	
+	This also implies that if $k$ were to grow sublinearly to $n$, we would obtain a faster algorithm than the current fastest algorithm.\par
+	\section{Future Works}
+	It can be seen that the bound obtained was done so quite loosely, due to the approximations on the summation obtained, as well as due to the application of stochastic dominance when modelling the random walk. Therefore one possible future extension could be to just find a better method of bounding the probabilities.\par
+	
+\section{Conclusion}	
+	To restate our work, we applied a similar concept to Sch\"{o}ning's algorithm as well as technique on bounding and analysis, and managed to obtain a faster solution than the current best for all values of $k$ up to a ratio of 0.1404, as well as cases where $k$ grows sublinearly in n.\par
 
 \end{document}
 
