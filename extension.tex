@@ -34,23 +34,25 @@ Notice that transforming the addition and comparison circuits into a Conjunctive
 	\BlankLine
 	Randomly select a $k$ sized vertex subset as $D$.\\
 	\For{steps = 1 to 3n}{
-		\lIf{$|D| < k$ and a valid }{return $D$}
+		\lIf{$D$ is a dominating set }{return $D$}
 		Randomly select a vertex $u$ in the current set $D$.\\
-		Randomly select a neighbour of $u$, say $v$, and swap them, so that $v$ is now in the set, and $u$ isn't\\
+		Arbitrarily select a neighbourhood in the graph not covered by $D$\\
+		Randomly select vertex $v$ from the neighbourhood of vertices.\\
+		Add $v$ to $D$ and remove $u$ from $D$.\\		
 	}
-	\lIf{$|D| < k$ and a valid }{return $D$}
+	\lIf{$D$ is a dominating set}{return $D$}
 	\hspace{7em}\lElse{return NO}
 \end{algorithm}
 	
 \section{Definition of Distance}
-	Similar to Sch\"{o}ning's algorithm, we need a notion of distance. We let $D^*$ be some set of vertices that is actually the minimum dominating set, and let $D$ be some set of of vertices, both of size $k$. Then we define the distance $r$ between the two to simply be $k - |D \cap D^*|$, or in some sense the number of vertices in which they disagree.\par
+	Similar to Sch\"{o}ning's algorithm, we need a notion of distance. We let $D^*$ be some set of vertices that is actually a k-dominating set, and let $D$ be some set of of vertices, both of size $k$. Then we define the distance $r$ between the two to simply be $k - |D \cap D^*|$, or in some sense the number of vertices in which they disagree.\par
 \section{Running Time Analysis}
-The probability that we go one step closer to the dominating set $S^*$ is $\geq \frac{1}{kd}$. The probability that we go one step further is $\leq \frac{k-1}{k} \cdot \frac{d-1}{d}$. Otherwise, we stay put. Nonetheless, for the ease of analysis, we applied stochastic dominance in considering the case that we also go one step further when we stay put, that is, we go one step further with probability $\frac{kd-1}{kd}$. Let $p_r$ denote the probability that we reach the dominating set within $3n$ steps, starting from $r$ steps away from the $S^*$. Using the analysis  for random walk from \cite{Schoning99} directly, we have:
+The probability that we go one step closer to the dominating set $D^*$ is $\geq \frac{1}{kd}$. The probability that we go one step further is $\leq \frac{k-1}{k} \cdot \frac{d-1}{d}$. Otherwise, we stay put. Nonetheless, for the ease of analysis, we apply stochastic dominance in considering the case that we also go one step further when we stay put, that is, we go one step further with probability $\frac{kd-1}{kd}$. Let $p_r$ denote the probability that we reach the dominating set within $3n$ steps, where $n$ is the number of vertices, starting from $r$ steps away from the $D^*$. Using the analysis  for random walk from \cite{Schoning99} directly, we have:
 \begin{align*}
 p_r &\geq \sum_{i = 0}^r {r+2i \choose i} \cdot \Big(\frac{kd-1}{kd}\Big)^i \cdot \Big(\frac{1}{kd}\Big)^{i+r} \\
 &\geq \Big(\frac{1}{kd-1}\Big)^r
 \end{align*}
-There are in total ${n \choose k}$ possible sets. Among them, there are ${k \choose r}{n-k \choose r}$ sets that are exactly $r$ steps from the dominating set $S^*$. Hence, one iteration of the random walk algorithm succeeds with probability:
+There are in total ${n \choose k}$ possible sets. Among them, there are ${k \choose r}{n-k \choose r}$ sets that are exactly $r$ steps from the dominating set $D^*$. Hence, one iteration of the random walk algorithm succeeds with probability:
 \begin{align*}
 \Pr(\text{success}) &\geq \sum_{r = 0}^{k} \frac{{k \choose r}{n-k \choose r}}{{n \choose k}} \cdot \Big(\frac{1}{kd - 1}\Big)^r \\
 &\geq \frac{1}{{n \choose k}} \sum_{r = 0}^k {k \choose r}{n-k \choose r} \cdot \Big(\frac{1}{kd - 1}\Big)^r \\
@@ -70,11 +72,11 @@ Therefore, we see that this algorithm runs faster than the naive search in all s
 Finally, by a numerical analysis on the above bound, we found that for $k \leq 0.1404n$, our algorithm runs faster than the currently fastest algorithm that runs in $\mathcal{O}^*(1.5048^n)$\cite{Rooij}.
 
 \section{Discussion and Future Works}
-	\section{Discussion}
+	\subsection{Discussion}
 	During our analysis of the running time, it appeared that the degree $d$ did not affect the bound on the running time. Whereas as shown, the value of $k$ relative to $n$ played a huge role.\par
 	
 	This also implies that if $k$ were to grow sublinearly to $n$, we would obtain a faster algorithm than the current fastest algorithm.\par
-	\section{Future Works}
+	\subsection{Future Works}
 	It can be seen that the bound obtained was done so quite loosely, due to the approximations on the summation obtained, as well as due to the application of stochastic dominance when modelling the random walk. Therefore one possible future extension could be to just find a better method of bounding the probabilities.\par
 	
 \section{Conclusion}	
