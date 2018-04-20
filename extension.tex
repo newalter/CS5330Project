@@ -2,6 +2,9 @@
 
 
 \usepackage{enumitem}
+\usepackage{amsmath}
+
+
 \title{Applying Sch\"{o}ning's Algorithm on the k-Dominating Set problem}
 \author{Li Zeyong, Eldon Chung}
 \date{20-Apr-2018}
@@ -12,14 +15,49 @@
 
 \section{Introduction}
 
-\section{Naive Reduction to k-SAT}
+\section{Naive Reduction to SAT}
+There is a naive reduction from k-Dominating Set to SAT. Consider an instance of a graph $G = (V,E)$ for k-Dominating Set where $|V| = n$, we can construct a SAT formula in the following manner. For each vertex $v_i \in V$, we introduce a variable $x_i$ and assuming that vertex $v_{i_1}, v_{i_2},..., v_{i_j}$ are connected to $v_i$, we construct a clause $C_i = (x_i, x_{i_1}, ..., x_{i_j})$. Lastly, we introduce an addition circuit and a comparison circuit to ensure that $\sum_{i = 1}^n x_i 
+\leq k$ \par
+Notice that transforming the addition and comparison circuits into a Conjunctive Normal Form inevitably increases the total number of variables to be more than $n$, applying the reduction to SAT and then apply Sch\"{o}ning's Algorithm on the SAT instance might not even beat the naive $O^*({n \choose k})$ search algorithm. Hence, we look into applying the Random Walk directly without go through the reduction to SAT.
 
 \section{Applying the Random Walk Directly}
 
 \section{Running Time Analysis}
+The probability that we go one step closer to the dominating set $S^*$ is $\geq \frac{1}{kd}$. The probability that we go one step further is $\leq \frac{k-1}{k} \cdot \frac{d-1}{d}$. Otherwise, we stay put. Nonetheless, for the ease of analysis, we applied stochastic dominance in considering the case that we also go one step further when we stay put, that is, we go one step further with probability $\frac{kd-1}{kd}$. Let $p_r$ denote the probability that we reach the dominating set within $3n$ steps, starting from $r$ steps away from the $S^*$. Using the analysis  for random walk from \cite{Schoning99} directly, we have:
+\begin{align*}
+p_r &\geq \sum_{i = 0}^r {r+2i \choose i} \cdot \Big(\frac{kd-1}{kd}\Big)^i \cdot \Big(\frac{1}{kd}\Big)^{i+r} \\
+&\geq \Big(\frac{1}{kd-1}\Big)^r
+\end{align*}
+There are in total ${n \choose k}$ possible sets. Among them, there are ${k \choose r}{n-k \choose r}$ sets that are exactly $r$ steps from the dominating set $S^*$. Hence, one iteration of the random walk algorithm succeeds with probability:
+\begin{align*}
+\Pr(\text{success}) &\geq \sum_{r = 0}^{k} \frac{{k \choose r}{n-k \choose r}}{{n \choose k}} \cdot \Big(\frac{1}{kd - 1}\Big)^r \\
+&\geq \frac{1}{{n \choose k}} \sum_{r = 0}^k {k \choose r}{n-k \choose r} \cdot \Big(\frac{1}{kd - 1}\Big)^r \\
+&\geq \frac{1}{{n \choose k}} \sum_{r = 0}^k {k \choose r}\Big(\frac{n-k}{r}\Big)^r \cdot \Big(\frac{1}{kd-1}\Big)^r \\
+&\geq \frac{1}{{n \choose k}} \sum_{r = 0}^k {k \choose r}\Big(\frac{n-k}{k}\Big)^r \cdot \Big(\frac{1}{kd-1}\Big)^r \\
+&\geq \frac{1}{{n \choose k}} \sum_{r = 0}^k {k \choose r} \Big(\frac{n-k}{k^2d - k}\Big)^r \cdot 1^{k-r} \\
+&\geq \frac{1}{{n \choose k}} \Big(1 + \frac{n-k}{k^2d - k}\Big)^k
+\end{align*}
+Now we can amplify the probability by repeating and the over running time is:
+\begin{align*}
+T(n,k) = \mathcal{O}^*\left({n \choose k}\frac{1}{\Big(1 + \frac{n-k}{k^2d - k}\Big)^k}\right) < \mathcal{O}^*\left({n \choose k}\right)
+\end{align*}
+Therefore, we see that this algorithm runs faster than the naive search in all scenarios. We then try to further approximate this to get a more straightforward running time. Let $H$ be the binary entropy function. \par
+\begin{align*}
+{n \choose k}\frac{1}{\Big(1 + \frac{n-k}{k^2d - k}\Big)^k} &\leq 2^{nH(k/n)} \Big(\frac{k^2d - k}{k^2d - 2k + n}\Big)^k 
+\end{align*}
+Finally, by a numerical analysis on the above bound, we found that for $k \leq 0.1404n$, our algorithm runs faster than the currently fastest algorithm that runs in $\mathcal{O}^*(1.5048^n)$\cite{Rooij}.
 
 \section{Conclusion}
 
-
+\begin{thebibliography}{9}
+	\bibitem{Rooij}
+	van Rooij, J. M. M.; Nederlof, J.; van Dijk, T. C. \textit{Inclusion/Exclusion Meets Measure and Conquer: Exact Algorithms for Counting Dominating Sets}
+	Proc. 17th Annual European Symposium on Algorithms, ESA (2009).
+	
+	
+	\bibitem{Schoning99}
+	U. Sch\"{o}ning.
+	\textit{A Probabilistic Algorithm for $k$-SAT and Constraint Satisfaction Problems.} Proceedings of the 40th Annual Symposium on Foundations of Computer Science, (1999).
+\end{thebibliography}
 \end{document}
 
